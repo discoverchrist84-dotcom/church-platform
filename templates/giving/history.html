@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Your giving · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Your giving</h1></div>
+<div class="stack">
+  {% for d in donations %}
+    <div class="card">
+      <div class="row between">
+        <strong>{{ d.amount }} {{ d.currency }} · {{ d.fund.name }}</strong>
+        <span class="pill {% if d.status == 'succeeded' %}ok{% elif d.status == 'failed' %}warn{% endif %}">{{ d.get_status_display }}</span>
+      </div>
+      <p class="byline" style="margin:.25rem 0 0">{{ d.created_at|date:"M j, Y g:i A" }}</p>
+    </div>
+  {% empty %}<div class="empty">You haven't given online yet. <a href="{% url 'giving:give' %}">Give now</a>.</div>{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.number }} · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="page-head"><span class="kicker">Thank you, {{ order.name }}</span><h1>Order {{ order.number }}</h1>
+  <p><span class="pill {% if order.is_paid %}ok{% else %}warn{% endif %}">{{ order.get_status_display }}</span></p></div>
+<div class="split">
+  <div class="stack">
+    {% if order.status == "pending" %}
+      <div class="card">
+        {% if order.payment_method == "transfer" %}
+          <h2 style="margin-top:0">Pay by bank transfer</h2>
+          <p>Please transfer <strong>{{ order.total }} {{ order.currency }}</strong> and quote <strong>{{ order.number }}</strong>.</p>
+          {% if payment_instructions %}<pre class="bank">{{ payment_instructions }}</pre>{% else %}<p class="muted">The church will email you the bank details shortly.</p>{% endif %}
+          <p class="muted">We confirm your order as soon as the payment arrives, and your e-books open on this page.</p>
+        {% elif order.payment_method == "cash" %}
+          <h2 style="margin-top:0">Pay on delivery or collection</h2><p>Please have <strong>{{ order.total }} {{ order.currency }}</strong> ready. We will contact you at {{ order.phone|default:order.email }}.</p>
+        {% else %}<p>Your payment has not completed yet.</p>{% endif %}
+      </div>
+    {% endif %}
+    {% if ebooks %}
+      <div class="card"><h2 style="margin-top:0">Your e-books</h2>
+        {% for i in ebooks %}<p><b>{{ i.book.title }}</b><br>
+          <a class="btn small" href="{% url 'bookstore:download' slug=i.book.slug %}">Download PDF</a>
+          {% if i.book.chapters.exists %} <a class="btn small ghost" href="{{ i.book.get_absolute_url }}">Read online</a>{% endif %}</p>{% endfor %}
+      </div>
+    {% endif %}
+    {% if order.has_print and order.is_paid %}<div class="card"><p>Your printed copies will be {% if order.delivery == "pickup" %}ready for collection. We will tell you where.{% else %}sent to {{ order.address }}, {{ order.city }}.{% endif %}</p></div>{% endif %}
+  </div>
+  <aside class="card">
+    <h2 style="margin-top:0">Summary</h2>
+    <ul class="list">{% for i in order.items.all %}<li>{{ i.quantity }} × {{ i.book.title }} <span class="muted">({{ i.get_fmt_display }})</span> <b style="float:right">{{ i.line_total }}</b></li>{% endfor %}</ul>
+    {% if order.shipping %}<p>Delivery: {{ order.shipping }} {{ order.currency }}</p>{% endif %}
+    <p>Total: <b>{{ order.total }} {{ order.currency }}</b></p>
+    <p class="muted">Keep this page’s link: it is your private order page.</p>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · {{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block fullwidth %}
+{% include "churches/_hero.html" %}
+<div class="wrap narrow page-body">
+  <h2 style="margin-top:0">{{ title }}</h2>
+  <form method="post" class="card"{% if multipart %} enctype="multipart/form-data"{% endif %}>
+    {% csrf_token %}
+    {% include "components/form.html" %}
+    <div class="row">
+      <button class="btn" type="submit">{{ submit }}</button>
+      <a class="btn ghost" href="{{ branch.get_absolute_url }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

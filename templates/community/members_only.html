@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Members only · {{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block fullwidth %}
+{% include "churches/_hero.html" %}
+<div class="wrap narrow page-body">
+  <div class="card" style="text-align:center">
+    <h2 style="margin-top:0">This space is for members</h2>
+    <p>The board, groups and prayer wall of {{ branch.name }} are private to its members.</p>
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'churches:join' slug=branch.slug %}">{% csrf_token %}
+        <button class="btn" type="submit">Join {{ branch.name }}</button></form>
+    {% else %}
+      <p class="row" style="justify-content:center">
+        <a class="btn" href="{% url 'accounts:login' %}?next={{ request.path }}">Sign in</a>
+        <a class="btn ghost" href="{% url 'accounts:signup' %}">Create an account</a>
+      </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

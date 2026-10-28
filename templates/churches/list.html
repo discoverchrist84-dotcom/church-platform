@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Our structure · {{ SITE_BRAND }}{% endblock %}
+{% block description %}How {{ SITE_BRAND }} is organised: areas, districts and local churches, with their superintendents.{% endblock %}
+{% block content %}
+<div class="page-head">
+  <span class="kicker">Directory</span>
+  <h1>Our structure</h1>
+  <p class="lede">The church is organised into <strong>areas</strong>, each made up of <strong>districts</strong>, each gathering its <strong>stations</strong> (local churches). The National Headquarters is {% if hq %}<a href="{{ hq.get_absolute_url }}">{{ hq.name }}</a>{% else %}one of the stations{% endif %}.</p>
+</div>
+{% include "churches/_tabs.html" with tab="overview" %}
+
+<form class="toolbar" method="get" role="search" data-autosubmit>
+  <div class="toolbar__search">
+    <input type="search" name="q" value="{{ q }}" placeholder="Search a church, city or superintendent" aria-label="Search">
+  </div>
+  <label class="toolbar__sel"><span>Area</span>
+    <select name="area"><option value="">All areas</option>
+      {% for a in areas %}<option value="{{ a.slug }}"{% if a.slug == area %} selected{% endif %}>{{ a.name }}</option>{% endfor %}
+    </select></label>
+  <label class="toolbar__sel"><span>District</span>
+    <select name="district"><option value="">All districts</option>
+      {% for d in districts %}<option value="{{ d.slug }}"{% if d.slug == district %} selected{% endif %}>{{ d.name }}</option>{% endfor %}
+    </select></label>
+  {% if level %}<input type="hidden" name="level" value="{{ level }}">{% endif %}
+  {% if sort and view == "table" %}<input type="hidden" name="sort" value="{% if desc %}-{% endif %}{{ sort }}">{% endif %}
+  <button class="btn" type="submit">Search</button>
+</form>
+
+<div class="levelbar">
+  <div class="chips levels" role="group" aria-label="Show only">
+    <a class="lvl{% if not level %} on{% endif %}" href="?view=table{% if q %}&amp;q={{ q|urlencode }}{% endif %}">All <small>{{ total }}</small></a>
+    {% for value, label, n in level_chips %}
+      <a class="lvl{% if level == value %} on{% endif %}" href="?level={{ value }}{% if q %}&amp;q={{ q|urlencode }}{% endif %}">{{ label }}s <small>{{ n }}</small></a>
+    {% endfor %}
+  </div>
+  <div class="viewswitch" role="group" aria-label="View">
+    <a class="{% if view == 'tree' %}on{% endif %}" href="{% url 'churches:list' %}"{% if view == 'tree' %} aria-current="true"{% endif %}>Tree</a>
+    <a class="{% if view == 'table' %}on{% endif %}" href="?view=table"{% if view == 'table' %} aria-current="true"{% endif %}>Directory</a>
+  </div>
+</div>
+
+{% if view == "tree" %}
+  {% if tree %}
+    <ul class="tree tree--root">
+      {% for node in tree %}{% include "churches/_node.html" with node=node %}{% endfor %}
+    </ul>
+  {% else %}
+    <div class="empty">No units have been added yet.{% if user.is_staff %} <a href="{% url 'admin:churches_branch_add' %}">Add the first area</a>.{% endif %}</div>
+  {% endif %}
+{% else %}
+  <p class="resultbar"><strong>{{ count }}</strong> result{{ count|pluralize }}{% if q or level or area or district %} · <a href="?view=table">Clear filters</a>{% endif %}</p>
+  {% if page.object_list %}
+  <div class="tablewrap">
+    <table class="dir">
+      <thead><tr>
+        {% for h in heads %}
+          <th scope="col" aria-sort="{{ h.state }}"><a href="{{ h.href }}">{{ h.label }}<span class="sortmark" aria-hidden="true"></span></a></th>
+        {% endfor %}
+      </tr></thead>
+      <tbody class="stagger">
+        {% for b in page.object_list %}
+        <tr>
+          <td data-label="Name"><a class="dir__name" href="{{ b.get_absolute_url }}">{{ b.name }}</a></td>
+          <td data-label="Type"><span class="pill {% if b.is_national_headquarters %}gold{% endif %}">{% if b.is_national_headquarters %}National HQ{% else %}{{ b.get_level_display }}{% endif %}</span></td>
+          <td data-label="Area">{% if b.area_unit and b.area_unit != b %}<a href="?area={{ b.area_unit.slug }}">{{ b.area_unit.name }}</a>{% else %}<span class="muted">—</span>{% endif %}</td>
+          <td data-label="District">{% if b.district_unit and b.district_unit != b %}<a href="?district={{ b.district_unit.slug }}">{{ b.district_unit.name }}</a>{% else %}<span class="muted">—</span>{% endif %}</td>
+          <td data-label="Led by">{% with l=b.superintendent %}{% if l %}<span class="who"><span class="who__av">{% if l.photo|file_url %}<img src="{{ l.photo|file_url }}" alt="" loading="lazy" width="28" height="28">{% else %}{{ l.initials }}{% endif %}</span>{{ l.name }}</span>{% else %}<span class="muted">—</span>{% endif %}{% endwith %}</td>
+          <td data-label="City">{{ b.city|default:"—" }}</td>
+          <td data-label="Units">{% if b.child_count %}{{ b.child_count }}{% else %}<span class="muted">—</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "components/pager.html" with prev_label="← Previous" next_label="Next →" %}
+  {% else %}
+    <div class="empty">Nothing matches. <a href="?view=table">Clear filters</a>.</div>
+  {% endif %}
+{% endif %}
+{% endblock %}

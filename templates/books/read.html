@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ chapter.title }} · {{ book.title }}{% endblock %}
+{% block content %}
+<p class="crumbs"><a href="{% url 'bookstore:list' %}">Books</a> › <a href="{{ book.get_absolute_url }}">{{ book.title }}</a></p>
+<article class="reader">
+  <p class="kicker">Chapter {{ chapter.number }}</p>
+  <h1>{{ chapter.title }}</h1>
+  {% for p in paragraphs %}<p>{{ p }}</p>{% endfor %}
+</article>
+<nav class="reader__nav" aria-label="Chapters">
+  {% if prev %}<a class="btn ghost" href="{{ prev.get_absolute_url }}">← {{ prev.title }}</a>{% else %}<span></span>{% endif %}
+  <a class="btn ghost" href="{{ book.get_absolute_url }}">All chapters</a>
+  {% if next %}{% if can_next %}<a class="btn" href="{{ next.get_absolute_url }}">{{ next.title }} →</a>{% else %}<a class="btn" href="{{ book.get_absolute_url }}">Buy the e-book to read on</a>{% endif %}{% else %}<span></span>{% endif %}
+</nav>
+{% endblock %}

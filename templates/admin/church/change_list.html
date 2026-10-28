@@ -1,0 +1,15 @@
+{% extends "admin/change_list.html" %}
+{% block content %}
+{% if admin_help %}
+<div class="helpbox" role="note">
+  <strong>About this page</strong>
+  <p>{{ admin_help }}</p>
+  <p class="helpbox__how">
+    <span><b>Add:</b> use the “Add” button at the top right.</span>
+    <span><b>Edit:</b> click a name in the list.</span>
+    <span><b>Delete:</b> tick the box beside it, choose “Delete selected” in the Action menu, then Go. You are asked to confirm first.</span>
+  </p>
+</div>
+{% endif %}
+{{ block.super }}
+{% endblock %}

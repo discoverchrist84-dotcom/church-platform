@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Join · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<section class="form-card">
+  <h1>Create your account</h1>
+  <form method="post">
+    {% csrf_token %}
+    {% include "components/form.html" %}
+    <button class="btn block" type="submit">Create account</button>
+  </form>
+  <p class="muted" style="margin-top:1rem">Already registered? <a href="{% url 'accounts:login' %}">Sign in</a>.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }} · {{ SITE_BRAND }}{% endblock %}
+{% block description %}{{ book.description|truncatechars:160|default:SITE_DESCRIPTION }}{% endblock %}
+{% block content %}
+<p class="crumbs"><a href="{% url 'bookstore:list' %}">Books</a>{% if book.category %} › {{ book.category.name }}{% endif %}</p>
+<div class="bookpage">
+  <div class="bookpage__cover">
+    {% if book.cover|file_url %}<img src="{{ book.cover|file_url }}" alt="Cover of {{ book.title }}" width="320" height="480">{% else %}<span class="book__ph book__ph--big"><b>{{ book.title }}</b></span>{% endif %}
+  </div>
+  <div class="bookpage__info stack">
+    {% if book.series %}<span class="pill">{{ book.series }}</span>{% endif %}
+    <h1 style="margin:.2rem 0 0">{{ book.title }}</h1>
+    {% if book.subtitle %}<p class="lede" style="margin:0">{{ book.subtitle }}</p>{% endif %}
+    {% if book.authors.all %}<p>by {% for a in book.authors.all %}<strong>{{ a.name }}</strong>{% if a.affiliation %} <span class="muted">({{ a.affiliation }})</span>{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+    <p class="muted">{{ tag }}{% if book.publisher %} · {{ book.publisher }}{% endif %}{% if book.year %} · {{ book.year }}{% endif %}{% if book.pages %} · {{ book.pages }} pages{% endif %} · {{ book.language }}{% if book.isbn %} · ISBN {{ book.isbn }}{% endif %}</p>
+    {% if book.description %}<div>{{ book.description|linebreaks }}</div>{% endif %}
+
+    {% if book.free_to_read %}<p><span class="pill ok">Free to read online</span></p>{% endif %}
+
+    <div class="buybox card">
+      {% if owned %}<p><span class="pill ok">You have this e-book</span></p>
+        {% if book.ebook_file %}<p><a class="btn" href="{% url 'bookstore:download' slug=book.slug %}">Download the e-book</a></p>{% endif %}
+      {% endif %}
+      {% if book.can_buy_print or book.can_buy_ebook %}
+      <form method="post" action="{% url 'bookstore:cart_add' slug=book.slug %}">{% csrf_token %}
+        <fieldset class="formats">
+          <legend>Choose a format</legend>
+          {% if book.can_buy_ebook and not owned %}<label class="fmt"><input type="radio" name="format" value="ebook" checked><span>E-book (PDF), instant<b>{{ book.ebook_price }} {{ DEFAULT_CURRENCY }}</b></span></label>{% endif %}
+          {% if book.can_buy_print %}<label class="fmt"><input type="radio" name="format" value="print"{% if not book.can_buy_ebook or owned %} checked{% endif %}><span>Printed copy <small class="muted">({{ book.stock }} in stock)</small><b>{{ book.print_price }} {{ DEFAULT_CURRENCY }}</b></span></label>{% endif %}
+        </fieldset>
+        <label class="qty">Quantity <input type="number" name="quantity" value="1" min="1" max="20"></label>
+        <button class="btn block" type="submit">Add to cart</button>
+      </form>
+      {% elif book.sells_print and not book.can_buy_print %}<p class="muted">Printed copies are out of stock for now.</p>
+      {% elif not owned and not book.free_to_read %}<p class="muted">This book is not for sale online yet.</p>{% endif %}
+    </div>
+  </div>
+</div>
+
+{% if chapters %}
+<section class="card" style="margin-top:2rem">
+  <h2 style="margin-top:0">Read online</h2>
+  <ol class="chapters">
+    {% for c in chapters %}
+      <li>{% if c.open %}<a href="{{ c.get_absolute_url }}">{{ c.number }}. {{ c.title }}</a>{% if c.is_preview and not book.free_to_read and not owned %} <span class="pill gold">Free preview</span>{% endif %}
+          {% else %}<span class="muted">{{ c.number }}. {{ c.title }} <span class="pill">Locked: buy the e-book to read</span></span>{% endif %}</li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
+{% if related %}<h2>You may also like</h2><div class="grid books">{% for b in related %}{% include "books/_card.html" with b=b %}{% endfor %}</div>{% endif %}
+{% endblock %}

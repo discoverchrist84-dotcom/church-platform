@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Books &amp; shop · {{ SITE_BRAND }}{% endblock %}
+{% block description %}Books and daily devotionals from our ministers and other churches. Read online, download or order a printed copy.{% endblock %}
+{% block content %}
+<div class="page-head">
+  <span class="kicker">Books &amp; shop</span>
+  <h1>Books worth reading</h1>
+  <p class="lede">Writings from our own ministers and from other churches and denominations. Read online, get the e-book, or order a printed copy.</p>
+</div>
+
+{% if today %}
+<a class="card devo-teaser" href="{% url 'bookstore:devotional' %}">
+  <span class="pill gold">Today’s devotional</span>
+  <h3>{{ today.title }}</h3>{% if today.scripture %}<p class="muted">{{ today.scripture }}</p>{% endif %}
+  <span class="btn small">Read today’s word →</span>
+</a>
+{% endif %}
+
+<form class="toolbar" method="get" role="search" data-autosubmit>
+  <div class="toolbar__search"><input type="search" name="q" value="{{ q }}" placeholder="Search by title, author or topic" aria-label="Search books"></div>
+  <label class="toolbar__sel"><span>Category</span><select name="category"><option value="">All</option>
+    {% for c in categories %}<option value="{{ c.slug }}"{% if c.slug == category %} selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></label>
+  <label class="toolbar__sel"><span>From</span><select name="source"><option value="">Everyone</option>
+    {% for v, l in sources %}<option value="{{ v }}"{% if v == source %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+  <label class="toolbar__sel"><span>Format</span><select name="format"><option value="">Any</option>
+    <option value="print"{% if format == "print" %} selected{% endif %}>Printed copy</option>
+    <option value="ebook"{% if format == "ebook" %} selected{% endif %}>E-book</option>
+    <option value="free"{% if format == "free" %} selected{% endif %}>Free to read online</option></select></label>
+  <label class="toolbar__sel"><span>Sort</span><select name="sort"><option value="">Featured</option>
+    <option value="title"{% if sort == "title" %} selected{% endif %}>Title A–Z</option>
+    <option value="price"{% if sort == "price" %} selected{% endif %}>Lowest price</option></select></label>
+  <button class="btn" type="submit">Search</button>
+</form>
+
+{% if featured %}
+  <h2>Featured</h2>
+  <div class="grid books stagger">{% for b in featured %}{% include "books/_card.html" with b=b %}{% endfor %}</div>
+  <h2>All books</h2>
+{% else %}
+  <p class="resultbar"><strong>{{ count }}</strong> book{{ count|pluralize }}{% if q or category or source or format %} · <a href="{% url 'bookstore:list' %}">Clear filters</a>{% endif %}</p>
+{% endif %}
+
+{% if page.object_list %}
+  <div class="grid books stagger">{% for b in page.object_list %}{% include "books/_card.html" with b=b %}{% endfor %}</div>
+  {% include "components/pager.html" with prev_label="← Previous" next_label="Next →" %}
+{% else %}
+  <div class="empty">No books to show yet.{% if user.is_staff %} <a href="{% url 'admin:bookstore_book_add' %}">Add the first book</a>.{% endif %}</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Checkout · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Checkout</h1></div>
+<div class="split">
+  <form method="post" class="card stack" id="checkout">{% csrf_token %}
+    {{ form.non_field_errors }}
+    <h2 style="margin:0">Your details</h2>
+    {% for f in form.visible_fields %}
+      {% if f.name == "delivery" and not has_print %}{% elif f.name in "address city state country" and not has_print %}
+      {% elif f.name == "payment_method" %}
+        <div class="field"><span style="font-weight:600">How would you like to pay?</span>{{ f }}{{ f.errors }}</div>
+      {% elif f.name == "delivery" %}
+        <div class="field"><span style="font-weight:600">Printed books</span>{{ f }}{{ f.errors }}
+          {% if fee %}<small class="muted">Delivery costs {{ fee }} {{ currency }} per order. Collection is free.</small>{% endif %}</div>
+      {% else %}
+        <div class="field"><label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}{% if f.help_text %}<small class="muted">{{ f.help_text }}</small>{% endif %}{{ f.errors }}</div>
+      {% endif %}
+    {% endfor %}
+    <button class="btn block" type="submit">Place order</button>
+  </form>
+  <aside class="card">
+    <h2 style="margin-top:0">Order summary</h2>
+    <ul class="list">{% for l in lines %}<li>{{ l.qty }} × {{ l.book.title }} <span class="muted">({{ l.fmt }})</span> <b style="float:right">{{ l.total }}</b></li>{% endfor %}</ul>
+    <p>Subtotal: <b>{{ subtotal }} {{ currency }}</b></p>
+    {% if has_print %}<p>Delivery: <b>{{ shipping }} {{ currency }}</b> <small class="muted">(if delivered)</small></p>{% endif %}
+    <p>Total: <b>{{ total }} {{ currency }}</b></p>
+  </aside>
+</div>
+{% endblock %}

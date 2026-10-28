@@ -1,0 +1,101 @@
+{% extends "admin/base_site.html" %}
+{% load i18n log %}
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block content %}
+<div id="content-main" class="cdash">
+
+  <section class="cdash__hero">
+    <div>
+      <h1>Welcome{% if user.first_name %}, {{ user.first_name }}{% endif %}</h1>
+      <p>Everything about the church website is managed from here. Pick a task below, or open a section.</p>
+    </div>
+    <ul class="cdash__stats">
+      {% for label, n in stats %}<li><b>{{ n }}</b><span>{{ label }}</span></li>{% endfor %}
+    </ul>
+  </section>
+
+  {% if checklist %}
+  <section class="cdash__card cdash__setup" aria-labelledby="setup">
+    <h2 id="setup">Set up your website <small>{{ checklist.done }} of {{ checklist.total }} done</small></h2>
+    <div class="cdash__bar" role="progressbar" aria-valuenow="{{ checklist.percent }}" aria-valuemin="0" aria-valuemax="100"><span style="width:{{ checklist.percent }}%"></span></div>
+    <ul>{% for step in checklist.steps %}
+      <li class="{% if step.done %}is-done{% endif %}"><span aria-hidden="true">{% if step.done %}✅{% else %}⬜{% endif %}</span>
+        {% if step.url %}<a href="{{ step.url }}">{{ step.label }}</a>{% else %}{{ step.label }}{% endif %}</li>
+    {% endfor %}</ul>
+    <p class="cdash__viewsite"><a class="cbtn" href="/" target="_blank" rel="noopener">View the website ↗</a></p>
+  </section>
+  {% endif %}
+
+  {% if attention %}
+  <section class="cdash__card cdash__attention" aria-labelledby="att">
+    <h2 id="att">Needs your attention</h2>
+    <ul>{% for a in attention %}<li><a href="{{ a.url }}"><b>{{ a.count }}</b> {{ a.label }} <span aria-hidden="true">→</span></a></li>{% endfor %}</ul>
+  </section>
+  {% endif %}
+
+  {% if quick_actions %}
+  <section aria-labelledby="qa">
+    <h2 id="qa" class="cdash__h">Quick actions</h2>
+    <div class="cdash__quick">
+      {% for q in quick_actions %}<a href="{{ q.url }}"><span aria-hidden="true">{{ q.icon }}</span>{{ q.label }}</a>{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="cdash__card cdash__help" aria-labelledby="hw">
+    <h2 id="hw">How adding, editing and deleting work</h2>
+    <ol>
+      <li><b>Add</b>: open a section, find the item and press <em>+ Add</em>. Fill in the form and press <em>Save</em>.</li>
+      <li><b>Edit</b>: press <em>Change</em> (or click the item’s name), update it and press <em>Save</em>.</li>
+      <li><b>Delete</b>: open the item and press the red <em>Delete</em> button. You always get a confirmation page that lists anything else that would be removed.</li>
+      <li><b>Tip:</b> to take something off the website without losing it, untick <em>Active</em> / <em>Published</em> instead of deleting.</li>
+    </ol>
+  </section>
+
+  <h2 class="cdash__h">All sections</h2>
+  <div class="cdash__grid">
+  {% for app in app_list %}
+    <section class="cdash__section" id="{{ app.slug }}" aria-labelledby="h-{{ app.slug }}">
+      <header><span class="cdash__icon" aria-hidden="true">{{ app.icon }}</span>
+        <div><h3 id="h-{{ app.slug }}">{{ app.name }}</h3><p>{{ app.description }}</p></div></header>
+      <ul>
+      {% for model in app.models %}
+        <li>
+          <div class="cdash__name">
+            {% if model.admin_url %}<a href="{{ model.admin_url }}">{{ model.name }}</a>{% else %}{{ model.name }}{% endif %}
+            {% if model.description %}<small>{{ model.description }}</small>{% endif %}
+          </div>
+          <div class="cdash__btns">
+            {% if model.add_url %}<a class="cbtn cbtn--add" href="{{ model.add_url }}">+ Add</a>{% endif %}
+            {% if model.admin_url %}<a class="cbtn" href="{{ model.admin_url }}">{% if model.view_only %}View{% else %}Change{% endif %}</a>{% endif %}
+          </div>
+        </li>
+      {% endfor %}
+      </ul>
+    </section>
+  {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div id="content-related" class="cdash__recent">
+  <div class="module" id="recent-actions-module">
+    <h2>Recent changes</h2>
+    {% get_admin_log 12 as admin_log for_user user %}
+    {% if not admin_log %}<p>Nothing yet.</p>{% else %}
+    <ul class="actionlist">
+      {% for entry in admin_log %}
+      <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+        {% if entry.is_deletion or not entry.get_admin_url %}{{ entry.object_repr }}{% else %}<a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>{% endif %}
+        <br><span class="mini quiet">{% if entry.content_type %}{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}{% else %}Other{% endif %} · {{ entry.action_time|timesince }} ago</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+<details class="report-box">
+  <summary>Report</summary>
+  <form method="post" action="{% url 'community:report' slug=branch.slug kind=kind pk=pk %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <label class="sr-only" for="reason-{{ kind }}-{{ pk }}">Reason</label>
+    <input type="text" id="reason-{{ kind }}-{{ pk }}" name="reason" maxlength="500" minlength="3" required placeholder="What's wrong? Only leaders will see this.">
+    <button class="btn small danger" type="submit">Send report</button>
+  </form>
+</details>

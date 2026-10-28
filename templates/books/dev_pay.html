@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Test payment · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="form-card" style="text-align:center">
+  <p><span class="pill warn">Test mode</span></p><h1>Simulated payment</h1>
+  <p>No money will move.</p><p><strong>{{ order.total }} {{ order.currency }}</strong> for order {{ order.number }}</p>
+  <form method="post">{% csrf_token %}<button class="btn block" type="submit">Complete test payment</button></form>
+</div>
+{% endblock %}

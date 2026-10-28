@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Prayer wall · {{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block fullwidth %}
+{% include "churches/_hero.html" %}
+<div class="wrap narrow page-body">
+  <h2 style="margin-top:0">Prayer wall</h2>
+  <form method="post" class="card">
+    {% csrf_token %}
+    {% include "components/form.html" %}
+    <button class="btn" type="submit">Share request</button>
+  </form>
+
+  <div class="stack" style="margin-top:1.5rem">
+    {% for p in page %}
+      <article class="prayer{% if p.is_hidden %} hidden{% endif %}">
+        <p class="byline">{% if p.is_anonymous %}Anonymous{% else %}{{ p.author.get_full_name|default:p.author.username }}{% endif %}
+          · {{ p.created_at|date:"M j, Y" }}
+          {% if p.is_answered %}<span class="pill ok">Answered</span>{% endif %}
+          {% if p.is_hidden %}<span class="pill warn">Hidden</span>{% endif %}</p>
+        {{ p.body|linebreaks }}
+        <div class="row">
+          {% if p.author_id == user.id %}
+            <form method="post" action="{% url 'community:prayer_answered' slug=branch.slug pk=p.pk %}" class="inline">{% csrf_token %}
+              <button class="btn small ghost" type="submit">{% if p.is_answered %}Mark as not answered{% else %}Mark as answered{% endif %}</button></form>
+          {% elif can_manage %}{% include "community/_hide.html" with kind="prayer" pk=p.pk hidden=p.is_hidden %}
+          {% else %}{% include "community/_report.html" with kind="prayer" pk=p.pk %}{% endif %}
+        </div>
+      </article>
+    {% empty %}<div class="empty">No prayer requests yet.</div>{% endfor %}
+  </div>
+  {% include "components/pager.html" %}
+</div>
+{% endblock %}

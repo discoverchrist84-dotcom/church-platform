@@ -1,0 +1,153 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}{{ SITE_BRAND }} · {{ SITE_SUBBRAND }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ SITE_DESCRIPTION }}{% endblock %}">
+  <meta name="theme-color" content="{{ THEME_COLOR }}">
+  <meta name="color-scheme" content="light dark">
+
+  <link rel="manifest" href="{% url 'core:manifest' %}">
+  <link rel="icon" href="{{ SITE_LOGO_URL }}">
+  <link rel="apple-touch-icon" href="{% static 'icons/apple-touch-icon.png' %}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="{{ SITE_SHORT_NAME }}">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <script nonce="{{ csp_nonce }}">
+    /* Apply the saved theme before first paint so there is no light/dark flash. */
+    (function () {
+      var d = document.documentElement;
+      d.classList.add("js");
+      try {
+        var t = localStorage.getItem("theme");
+        if (t === "light" || t === "dark") d.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body{% if user.is_authenticated %} data-auth="1"{% endif %}>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  {% if BANNER %}
+  <div class="sitebanner" role="status">
+    {% if BANNER.link %}<a href="{{ BANNER.link }}" rel="noopener">{{ BANNER.text }} <span aria-hidden="true">→</span></a>{% else %}<span>{{ BANNER.text }}</span>{% endif %}
+  </div>
+  {% endif %}
+  <header class="site-header">
+    <div class="wrap bar">
+      <a class="brand" href="{% url 'core:home' %}" aria-label="{{ SITE_NAME }} — home">
+        <img src="{{ SITE_LOGO_URL }}" alt="" width="42" height="42">
+        <span class="brand-text">
+          <span class="brand-name">{{ SITE_BRAND }}</span>
+          <span class="brand-sub">{{ SITE_SUBBRAND }}</span>
+        </span>
+      </a>
+
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav" aria-label="Open menu">
+        <span class="bars" aria-hidden="true"></span>
+      </button>
+
+      <nav id="nav" class="nav" aria-label="Main">
+        {% with ns=request.resolver_match.namespace %}
+        <a href="{% url 'history:timeline' %}"{% if ns == 'history' %} aria-current="page"{% endif %}>History</a>
+        <a href="{% url 'churches:list' %}"{% if ns == 'churches' or ns == 'community' or ns == 'media_library' %} aria-current="page"{% endif %}>Structure</a>
+        <a href="{% url 'leadership:list' %}"{% if ns == 'leadership' %} aria-current="page"{% endif %}>Leadership</a>
+        <a href="{% url 'bookstore:list' %}"{% if ns == 'bookstore' %} aria-current="page"{% endif %}>Books</a>
+        <a href="{% url 'giving:give' %}"{% if ns == 'giving' %} aria-current="page"{% endif %}>Give</a>
+        <a href="{% url 'history:search' %}">Search</a>
+        <a class="cartlink" href="{% url 'bookstore:cart' %}">Cart{% if cart_count %} <span class="badge">{{ cart_count }}</span>{% endif %}</a>
+        {% if user.is_authenticated %}
+          <a class="bell" href="{% url 'realtime:list' %}"{% if ns == 'realtime' %} aria-current="page"{% endif %}>
+            Notifications <span class="badge" data-notif-badge{% if not unread_notifications %} hidden{% endif %}>{{ unread_notifications }}</span>
+          </a>
+          <a href="{% url 'bookstore:library' %}">My books</a>
+          {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
+          <form method="post" action="{% url 'accounts:logout' %}" class="inline">
+            {% csrf_token %}<button type="submit" class="linklike">Sign out</button>
+          </form>
+        {% else %}
+          <a href="{% url 'accounts:login' %}">Sign in</a>
+          <a class="btn small" href="{% url 'accounts:signup' %}">Join us</a>
+        {% endif %}
+        {% endwith %}
+        <button id="install-btn" class="btn small ghost-light" hidden type="button">Install app</button>
+
+        <div class="nav-theme"><span>Appearance</span>{% include "components/theme_switch.html" %}</div>
+        {% include "components/theme_switch.html" with extra_class="header-theme" %}
+      </nav>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="wrap">
+      {% for m in messages %}<p class="notice {{ m.tags }}">{{ m }}</p>{% endfor %}
+    </div>
+  {% endif %}
+
+  <main id="main">
+    {% block fullwidth %}
+      <div class="wrap">{% block content %}{% endblock %}</div>
+    {% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="cols">
+        <div>
+          <h4>{{ SITE_BRAND }}</h4>
+          <p>{{ SITE_NAME }}</p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="{% url 'history:timeline' %}">Church history</a></li>
+            <li><a href="{% url 'churches:list' %}">Our structure</a></li>
+            <li><a href="{% url 'leadership:list' %}">Leadership</a></li>
+            <li><a href="{% url 'history:search' %}">Search</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="{% url 'bookstore:list' %}">Books &amp; shop</a></li>
+            <li><a href="{% url 'bookstore:devotional' %}">Daily devotional</a></li>
+            <li><a href="{% url 'giving:give' %}">Give online</a></li>
+            {% if user.is_authenticated %}
+              <li><a href="{% url 'realtime:list' %}">Notifications</a></li>
+            {% else %}
+              <li><a href="{% url 'accounts:signup' %}">Create an account</a></li>
+              <li><a href="{% url 'accounts:login' %}">Sign in</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+      {% if CONTACT.email or CONTACT.phone or CONTACT.address or CONTACT.social %}
+      <p class="contactline">
+        {% if CONTACT.address %}<span>{{ CONTACT.address }}</span>{% endif %}
+        {% if CONTACT.phone %}<a href="tel:{{ CONTACT.phone }}">{{ CONTACT.phone }}</a>{% endif %}
+        {% if CONTACT.email %}<a href="mailto:{{ CONTACT.email }}">{{ CONTACT.email }}</a>{% endif %}
+        {% for label, url in CONTACT.social %}<a href="{{ url }}" rel="noopener" target="_blank">{{ label }}</a>{% endfor %}
+      </p>
+      {% endif %}
+      {% if CONTACT.footer_note %}<p class="fine">{{ CONTACT.footer_note }}</p>{% endif %}
+      <p class="fine">© {% now "Y" %} {{ SITE_NAME }}.
+        <span id="ios-hint" hidden> · To install on iPhone: tap Share, then “Add to Home Screen”.</span></p>
+    </div>
+  </footer>
+
+  <button class="to-top" id="to-top" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="{% static 'js/app.js' %}" defer></script>
+  {% if user.is_authenticated %}<script src="{% static 'js/notifications.js' %}" defer></script>{% endif %}
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block fullwidth %}
+<!-- ============ HERO ============ -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__rays" aria-hidden="true"></div>
+  <div class="hero__cloud c1" aria-hidden="true"></div>
+  <div class="hero__cloud c2" aria-hidden="true"></div>
+  <div class="hero__cloud c3" aria-hidden="true"></div>
+  <div class="hero__sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+  <div class="hero__inner">
+    <div class="hero__emblem"><img class="hero__logo" src="{{ SITE_LOGO_URL }}" alt="{{ SITE_BRAND }} logo" width="128" height="128"></div>
+    <span class="eyebrow">Welcome to</span>
+    <h1 id="hero-title">{{ SITE_BRAND }}</h1>
+    <p class="hero__sub">1984 Foundation Constitution <span>·</span> {{ SITE_SUBBRAND }}</p>
+    <p class="hero__lede">{{ WELCOME_TEXT|default:"Rise with us. Journey through the story of the church, find a local church near you, and stay connected to a family that lifts one another up." }}</p>
+    <div class="hero__cta">
+      <a class="btn" href="{% url 'history:timeline' %}">Explore our story</a>
+      <a class="btn ghost-light" href="{% url 'churches:list' %}">Find your church</a>
+    </div>
+  </div>
+
+  <a class="hero__scroll" href="#discover">Discover</a>
+  <div class="hero__wave" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,64 C240,120 480,0 720,48 C960,96 1200,120 1440,40 L1440,120 L0,120 Z"/></svg>
+  </div>
+</section>
+
+<!-- ============ NUMBERS ============ -->
+<section class="statsband" aria-label="The church at a glance">
+  <div class="wrap">
+    <ul class="stats">
+      <li class="reveal"><b data-count="1">1</b><span>National Headquarters</span></li>
+      <li class="reveal"><b data-count="{{ stats.areas }}">{{ stats.areas }}</b><span>Areas</span></li>
+      <li class="reveal"><b data-count="{{ stats.districts }}">{{ stats.districts }}</b><span>Districts</span></li>
+      <li class="reveal"><b data-count="{{ stats.stations }}">{{ stats.stations }}</b><span>Local churches</span></li>
+      <li class="reveal"><b data-count="{{ stats.members }}">{{ stats.members }}</b><span>Members</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ WHAT YOU'LL FIND ============ -->
+<section class="section" id="discover">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Everything in one place</span>
+      <h2>Your church family, online</h2>
+      <p class="lede">History, community, teaching and giving — built to work beautifully on your phone, tablet or computer.</p>
+    </div>
+    <div class="features">
+      <a class="card feature reveal" href="{% url 'history:timeline' %}">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 8h6M9 12h6"/></svg></span>
+        <h3>Walk through history</h3>
+        <p>A sourced timeline of the church, from the apostles to today.</p>
+      </a>
+      <a class="card feature reveal" href="{% url 'churches:list' %}">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.800 12 21 12 21z"/><circle cx="12" cy="9.500" r="2.500"/></svg></span>
+        <h3>Find your branch</h3>
+        <p>Every branch has its own space for news, events and fellowship.</p>
+      </a>
+      <a class="card feature reveal" href="{% url 'churches:list' %}">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.500l6 3.500-6 3.500z"/></svg></span>
+        <h3>Hear the Word</h3>
+        <p>Watch and listen to sermons from your branch, any time.</p>
+      </a>
+      <a class="card feature reveal" href="{% url 'giving:give' %}">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.400-7-10a4 4 0 0 1 7-2.600A4 4 0 0 1 19 10c0 5.600-7 10-7 10z"/></svg></span>
+        <h3>Give &amp; support</h3>
+        <p>Give securely to the work of the church, to your branch or a special fund.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW WE ARE ORGANISED ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">One family, well ordered</span>
+      <h2>How the church is organised</h2>
+      <p class="lede">A clear line from the national office to your local church, each level led by a superintendent or pastor who knows you by name.</p>
+    </div>
+    <ol class="orgflow">
+      <li class="reveal"><span class="orgflow__n">1</span><h3>National Headquarters</h3><p>The central office, the General Council and its officers.</p></li>
+      <li class="reveal"><span class="orgflow__n">2</span><h3>Areas</h3><p>Each led by an Area Superintendent.</p></li>
+      <li class="reveal"><span class="orgflow__n">3</span><h3>Districts</h3><p>Grouped within an area, each with a District Superintendent.</p></li>
+      <li class="reveal"><span class="orgflow__n">4</span><h3>Stations</h3><p>Your local church, where you worship each week.</p></li>
+    </ol>
+    <p style="text-align:center;margin-top:1.75rem" class="reveal"><a class="btn navy" href="{% url 'churches:list' %}">Explore the structure</a></p>
+  </div>
+</section>
+
+{% if devotional or home_books %}
+<!-- ============ BOOKS & DEVOTIONAL ============ -->
+<section class="section">
+  <div class="wrap">
+    {% if devotional %}
+    <div class="section-head reveal"><span class="kicker">Today’s word</span><h2>{{ devotional.title }}</h2>
+      {% if devotional.scripture %}<p class="lede">{{ devotional.scripture }}</p>{% endif %}</div>
+    <p style="text-align:center" class="reveal"><a class="btn" href="{% url 'bookstore:devotional' %}">Read today’s devotional</a></p>
+    {% endif %}
+    {% if home_books %}
+    <div class="section-head reveal" style="margin-top:2.5rem"><span class="kicker">Books &amp; shop</span><h2>Books worth reading</h2>
+      <p class="lede">From our ministers and from other churches. Read online, download, or order a copy.</p></div>
+    <div class="grid books stagger">{% for b in home_books %}{% include "books/_card.html" with b=b %}{% endfor %}</div>
+    <p style="text-align:center;margin-top:1.5rem" class="reveal"><a class="btn navy" href="{% url 'bookstore:list' %}">Visit the bookshop</a></p>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{% if spot_council and spot_members %}
+<!-- ============ LEADERSHIP ============ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Meet the leaders</span>
+      <h2>{{ spot_council.name }}</h2>
+      {% if spot_council.description %}<p class="lede">{{ spot_council.description|truncatewords:30 }}</p>{% endif %}
+    </div>
+    <div class="people people--big stagger">
+      {% for m in spot_members %}{% include "leadership/_person.html" with m=m %}{% endfor %}
+    </div>
+    <p style="text-align:center;margin-top:1.75rem"><a class="btn ghost" href="{% url 'leadership:list' %}">All leadership</a></p>
+  </div>
+</section>
+{% endif %}
+
+<!-- ============ HISTORY PREVIEW ============ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">The story so far</span>
+      <h2>Moments that shaped the church</h2>
+    </div>
+    <div class="rail">
+      {% for e in featured_events %}
+        <a class="card reveal" href="{{ e.get_absolute_url }}">
+          <span class="chip">{{ e.when }}</span>
+          <h3>{{ e.title }}</h3>
+          <p>{{ e.summary|truncatewords:22 }}</p>
+        </a>
+      {% empty %}
+        <div class="card"><h3>History is coming soon</h3><p>Published events will appear here.</p></div>
+      {% endfor %}
+    </div>
+    <p style="text-align:center;margin-top:1.5rem"><a class="btn navy" href="{% url 'history:timeline' %}">See the full timeline</a></p>
+  </div>
+</section>
+
+<!-- ============ VERSE ============ -->
+<section class="verse" aria-label="Scripture">
+  <blockquote class="reveal">But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint.</blockquote>
+  <cite>Isaiah 40:31</cite>
+</section>
+
+<!-- ============ UPCOMING ============ -->
+{% if upcoming %}
+<section class="section">
+  <div class="wrap narrow">
+    <div class="section-head reveal">
+      <span class="kicker">Gather with us</span>
+      <h2>Coming up</h2>
+    </div>
+    <div class="stack">
+      {% for ev in upcoming %}
+        <a class="card event reveal" href="{% url 'community:events' ev.branch.slug %}">
+          <div class="body">
+            <span class="date-tile"><small>{{ ev.starts_at|date:"M" }}</small><b>{{ ev.starts_at|date:"j" }}</b></span>
+            <div>
+              <h3>{{ ev.title }}</h3>
+              <p>{{ ev.starts_at|date:"D g:i A" }} · {{ ev.branch.name }}{% if ev.location %} · {{ ev.location }}{% endif %}</p>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ============ BRANCHES ============ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Near you</span>
+      <h2>Find a local church</h2>
+      <p class="lede">Join your branch to see its announcements, groups, prayer wall and more.</p>
+    </div>
+    <div class="grid">
+      {% for b in branches %}
+        <a class="card reveal" href="{{ b.get_absolute_url }}">
+          <h3>{{ b.name }}</h3>
+          <p>{{ b.city }}{% if b.city and b.country %}, {% endif %}{{ b.country }}</p>
+          {% if b.service_times %}<p class="muted">{{ b.service_times }}</p>{% endif %}
+        </a>
+      {% empty %}
+        <div class="empty">No branches yet.{% if user.is_staff %} Add one in the <a href="{% url 'admin:churches_branch_add' %}">admin</a>.{% endif %}</div>
+      {% endfor %}
+    </div>
+    <p style="text-align:center;margin-top:1.5rem"><a class="btn ghost" href="{% url 'churches:list' %}?view=table">Browse the full directory</a></p>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="section">
+  <div class="wrap narrow">
+    <div class="cta reveal">
+      {% if user.is_authenticated %}
+        <h2>Welcome back, {{ user.first_name|default:user.username }}</h2>
+        <p>Catch up with your branch, or give to the work of the church.</p>
+        <div class="row" style="justify-content:center">
+          <a class="btn" href="{% url 'churches:list' %}">Go to my branch</a>
+          <a class="btn ghost-light" href="{% url 'giving:give' %}">Give</a>
+        </div>
+      {% else %}
+        <h2>Come as you are. Rise together.</h2>
+        <p>Create a free account to join a branch, join groups, share prayer requests and never miss an event.</p>
+        <div class="row" style="justify-content:center">
+          <a class="btn" href="{% url 'accounts:signup' %}">Join us</a>
+          <a class="btn ghost-light" href="{% url 'accounts:login' %}">Sign in</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Give · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="page-head" style="text-align:center">
+  <h1>Give</h1>
+  <p class="lede">Thank you for supporting the work of the church.</p>
+</div>
+
+{% if test_mode %}
+  <p class="notice"><strong>Test mode.</strong> Payments are simulated; no real money moves. Connect a real payment provider before going live.</p>
+{% endif %}
+
+{% if not has_funds %}
+  <div class="empty">Giving isn't set up yet. {% if user.is_staff %}Add a fund in the <a href="{% url 'admin:giving_fund_add' %}">admin</a>.{% endif %}</div>
+{% else %}
+  <form method="post" class="form-card">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="field">
+      <label for="{{ form.fund.id_for_label }}">{{ form.fund.label }}</label>
+      {{ form.fund }}{{ form.fund.errors }}
+    </div>
+    <div class="field">
+      <span style="font-weight:600;display:block;margin-bottom:.3rem">Amount ({{ currency }})</span>
+      <div class="chips">
+        {% for p in presets %}<label><input type="radio" name="preset" value="{{ p }}"><span>{{ p }}</span></label>{% endfor %}
+      </div>
+      <label class="sr-only" for="{{ form.amount.id_for_label }}">Amount</label>
+      {{ form.amount }}{{ form.amount.errors }}
+    </div>
+    <div class="field">
+      <label for="{{ form.donor_name.id_for_label }}">{{ form.donor_name.label }}</label>
+      {{ form.donor_name }}{{ form.donor_name.errors }}
+    </div>
+    <div class="field">
+      <label for="{{ form.donor_email.id_for_label }}">{{ form.donor_email.label }}</label>
+      {{ form.donor_email }}
+      <span class="help">{{ form.donor_email.help_text }}</span>{{ form.donor_email.errors }}
+    </div>
+    <button class="btn block" type="submit">Continue</button>
+    <p class="muted" style="margin:1rem 0 0;font-size:.9rem;text-align:center">“God loves a cheerful giver.” — 2 Corinthians 9:7</p>
+  </form>
+  {% if user.is_authenticated %}<p style="text-align:center"><a href="{% url 'giving:history' %}">Your giving history</a></p>{% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Events · {{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block fullwidth %}
+{% include "churches/_hero.html" %}
+<div class="wrap page-body">
+  <div class="row between">
+    <h2 style="margin:0">{% if past %}Past events{% else %}Upcoming events{% endif %}</h2>
+    <div class="row">
+      {% if past %}<a class="btn small ghost" href="{% url 'community:events' slug=branch.slug %}">Upcoming</a>
+      {% else %}<a class="btn small ghost" href="?past=1">Past events</a>{% endif %}
+      {% if can_manage %}<a class="btn small" href="{% url 'community:event_create' slug=branch.slug %}">New event</a>{% endif %}
+    </div>
+  </div>
+
+  <div class="stack" style="margin-top:1.25rem">
+    {% for e in events %}
+      <article class="event">
+        {% if e.banner|file_url %}<img class="event__banner" src="{{ e.banner|file_url }}" alt="" loading="lazy">{% endif %}
+        <div class="body">
+          <span class="date-tile"><small>{{ e.starts_at|date:"M" }}</small><b>{{ e.starts_at|date:"j" }}</b></span>
+          <div>
+            <h3>{{ e.title }}</h3>
+            <p class="muted">{{ e.starts_at|date:"l, F j · g:i A" }}{% if e.ends_at %} – {{ e.ends_at|date:"g:i A" }}{% endif %}{% if e.location %} · {{ e.location }}{% endif %}</p>
+            <p>
+              <span class="pill ok">{{ e.going }} going</span>
+              {% if e.capacity %}<span class="pill">{{ e.capacity }} places</span>{% endif %}
+              {% if e.is_full %}<span class="pill warn">Full</span>{% endif %}
+            </p>
+          </div>
+        </div>
+        {% if e.description %}{{ e.description|linebreaks }}{% endif %}
+        {% if not past %}
+          {% if user.is_authenticated %}
+            <div class="rsvp">
+              <form method="post" action="{% url 'community:event_rsvp' slug=branch.slug event_id=e.pk %}">{% csrf_token %}
+                <input type="hidden" name="status" value="going"><input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button class="btn small{% if e.my_status != 'going' %} ghost{% endif %}" type="submit"{% if e.is_full and e.my_status != 'going' %} disabled{% endif %}>I'm going</button></form>
+              <form method="post" action="{% url 'community:event_rsvp' slug=branch.slug event_id=e.pk %}">{% csrf_token %}
+                <input type="hidden" name="status" value="maybe"><input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button class="btn small{% if e.my_status != 'maybe' %} ghost{% endif %}" type="submit">Maybe</button></form>
+              <form method="post" action="{% url 'community:event_rsvp' slug=branch.slug event_id=e.pk %}">{% csrf_token %}
+                <input type="hidden" name="status" value="no"><input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button class="btn small{% if e.my_status != 'no' %} ghost{% endif %}" type="submit">Can't go</button></form>
+            </div>
+          {% else %}
+            <p><a href="{% url 'accounts:login' %}?next={{ request.path }}">Sign in</a> to let us know you're coming.</p>
+          {% endif %}
+        {% endif %}
+      </article>
+    {% empty %}
+      <div class="empty">{% if past %}No past events.{% else %}No upcoming events yet. Check back soon.{% endif %}</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
