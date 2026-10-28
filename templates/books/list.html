@@ -5,6 +5,7 @@
 <div class="page-head">
   <span class="kicker">Books &amp; shop</span>
   <h1>Books worth reading</h1>
+  <p style="margin:0 0 .5rem"><a class="btn small ghost" href="{% url 'bookstore:cart' %}">View cart{% if cart_count %} ({{ cart_count }}){% endif %}</a></p>
   <p class="lede">Writings from our own ministers and from other churches and denominations. Read online, get the e-book, or order a printed copy.</p>
 </div>
 

@@ -9,4 +9,7 @@ if [ "$RUN_IMPORT" = "1" ]; then
   python manage.py import_stations
   python manage.py seed_books
 fi
+if [ -n "$LOADDATA" ]; then
+  python manage.py loaddata $LOADDATA
+fi
 exec daphne -b 0.0.0.0 -p "${PORT:-8000}" config.asgi:application

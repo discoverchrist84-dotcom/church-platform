@@ -57,23 +57,37 @@
         {% with ns=request.resolver_match.namespace %}
         <a href="{% url 'history:timeline' %}"{% if ns == 'history' %} aria-current="page"{% endif %}>History</a>
         <a href="{% url 'news:list' %}"{% if ns == 'news' %} aria-current="page"{% endif %}>News</a>
-        <a href="{% url 'churches:list' %}"{% if ns == 'churches' or ns == 'community' or ns == 'media_library' %} aria-current="page"{% endif %}>Structure</a>
-        <a href="{% url 'leadership:list' %}"{% if ns == 'leadership' %} aria-current="page"{% endif %}>Leadership</a>
+        <details class="navdrop"{% if ns == 'churches' or ns == 'leadership' or ns == 'community' or ns == 'media_library' %} data-current{% endif %}>
+          <summary>Church</summary>
+          <div class="navdrop__menu">
+            <a href="{% url 'churches:list' %}">Our structure</a>
+            <a href="{% url 'churches:areas' %}">Areas</a>
+            <a href="{% url 'churches:districts' %}">Districts</a>
+            <a href="{% url 'churches:stations' %}">Stations</a>
+            <a href="{% url 'churches:headquarters' %}">National Headquarters</a>
+            <a href="{% url 'leadership:list' %}">General Council &amp; leaders</a>
+          </div>
+        </details>
         <a href="{% url 'bookstore:list' %}"{% if ns == 'bookstore' %} aria-current="page"{% endif %}>Books</a>
         <a href="{% url 'giving:give' %}"{% if ns == 'giving' %} aria-current="page"{% endif %}>Give</a>
-        <a href="{% url 'history:search' %}">Search</a>
-        <a class="cartlink" href="{% url 'bookstore:cart' %}">Cart{% if cart_count %} <span class="badge">{{ cart_count }}</span>{% endif %}</a>
+        <a class="nav-search" href="{% url 'history:search' %}" aria-label="Search the site" title="Search">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="nav-search__label">Search</span>
+        </a>
         {% if user.is_authenticated %}
-          <a class="bell" href="{% url 'realtime:list' %}"{% if ns == 'realtime' %} aria-current="page"{% endif %}>
-            Notifications <span class="badge" data-notif-badge{% if not unread_notifications %} hidden{% endif %}>{{ unread_notifications }}</span>
-          </a>
-          <a href="{% url 'bookstore:library' %}">My books</a>
-          {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
-          <form method="post" action="{% url 'accounts:logout' %}" class="inline">
-            {% csrf_token %}<button type="submit" class="linklike">Sign out</button>
-          </form>
+          <details class="navdrop navdrop--account">
+            <summary><span class="avatar" aria-hidden="true">{{ user.first_name|slice:":1"|default:user.username|slice:":1"|upper }}</span>
+              <span class="navdrop__who">My account</span>
+              <span class="badge" data-notif-badge{% if not unread_notifications %} hidden{% endif %}>{{ unread_notifications }}</span></summary>
+            <div class="navdrop__menu navdrop__menu--right">
+              <a href="{% url 'accounts:dashboard' %}">My dashboard</a>
+              {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin console</a>{% endif %}
+              <form method="post" action="{% url 'accounts:logout' %}" class="inline">
+                {% csrf_token %}<button type="submit" class="linklike">Sign out</button>
+              </form>
+            </div>
+          </details>
         {% else %}
-          <a href="{% url 'accounts:login' %}">Sign in</a>
+          <a class="nav-signin" href="{% url 'accounts:login' %}">Sign in</a>
           <a class="btn small" href="{% url 'accounts:signup' %}">Join us</a>
         {% endif %}
         {% endwith %}

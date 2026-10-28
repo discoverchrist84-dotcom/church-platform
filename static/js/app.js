@@ -27,6 +27,14 @@
   });
 
   // --- Mobile nav drawer -------------------------------------------------
+  // Menu groups (Church, My account) close when you click elsewhere or press Esc.
+  document.addEventListener("click", function (e) {
+    document.querySelectorAll("details.navdrop[open]").forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute("open"); });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") document.querySelectorAll("details.navdrop[open]").forEach(function (d) { d.removeAttribute("open"); });
+  });
+
   var toggle = document.querySelector(".nav-toggle");
   var nav = document.getElementById("nav");
   function setNav(open) {

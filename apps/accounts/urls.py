@@ -13,4 +13,5 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),  # POST only
     path("signup/", views.signup, name="signup"),
+    path("dashboard/", views.dashboard, name="dashboard"),
 ]

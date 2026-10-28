@@ -862,3 +862,44 @@ th[aria-sort="descending"] .sortmark::after { content: "▼"; opacity: 1; color:
 .newscard p { margin: 0; }
 .reader--news { font-family: inherit; }
 .news__hero { width: 100%; max-height: 24rem; object-fit: cover; border-radius: var(--radius); margin: .5rem 0 1rem; }
+
+/* ---- Cleaner navigation: brand first, grouped menu, account menu ------------------- */
+.brand img { width: 52px; height: 52px; }
+.site-header.scrolled .brand img { width: 40px; height: 40px; }
+.brand-name { font-size: 1.12rem; }
+.brand-sub { font-size: .74rem; }
+.brand { flex: 1 1 auto; }
+.navdrop { position: relative; }
+.navdrop > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: .5rem; padding: .85rem .25rem; color: #e6efff; font-weight: 600; font-size: 1.05rem; border-bottom: 1px solid rgba(255,255,255,.1); }
+.navdrop > summary::-webkit-details-marker { display: none; }
+.navdrop > summary::after { content: ""; width: .45rem; height: .45rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-2px); margin-left: auto; transition: transform .2s; }
+.navdrop[open] > summary::after { transform: rotate(-135deg); }
+.navdrop[data-current] > summary { color: var(--gold); }
+.navdrop__menu { padding: 0 0 .4rem .9rem; }
+.navdrop__menu a, .navdrop__menu .linklike { font-size: .98rem; font-weight: 500; }
+.navdrop--account > summary { gap: .6rem; }
+.avatar { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--gold); color: var(--navy-deep); font-weight: 800; }
+.nav-search svg { flex: none; }
+.nav-signin { }
+@media (min-width: 62rem) {
+  .brand { flex: 0 1 auto; margin-right: auto; }
+  .bar { gap: 1.25rem; }
+  .navdrop > summary { padding: .5rem .8rem; border: 0; border-radius: 999px; font-size: .97rem; }
+  .navdrop > summary:hover, .navdrop[open] > summary { background: rgba(255,255,255,.1); }
+  .navdrop > summary::after { margin-left: .1rem; }
+  .navdrop__menu { position: absolute; top: calc(100% + .5rem); left: 0; min-width: 15rem; padding: .4rem; background: var(--navy-deep); border: 1px solid rgba(255,255,255,.18); border-top: 3px solid var(--gold); border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,.45); z-index: 60; }
+  .navdrop__menu--right { left: auto; right: 0; min-width: 13rem; }
+  .navdrop__menu a, .navdrop__menu .linklike { width: 100%; border-radius: 8px; padding: .6rem .8rem; }
+  .navdrop__menu form.inline { display: block; }
+  .nav-search__label { display: none; }
+  .navdrop__who { max-width: 8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+@media (min-width: 62rem) and (max-width: 74rem) { .navdrop__who { display: none; } }
+
+/* ---- My dashboard -------------------------------------------------------------------- */
+.dash { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); margin: 1.25rem 0 2rem; }
+.dash__tile { display: flex; flex-direction: column; gap: .35rem; text-decoration: none; color: inherit; }
+.dash__tile:hover { transform: translateY(-3px); }
+.dash__icon { font-size: 1.6rem; }
+.dash__tile h3 { margin: 0; }
+.dash__tile p { margin: 0; }

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}My dashboard · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <span class="kicker">My dashboard</span>
+  <h1>Welcome{% if user.first_name %}, {{ user.first_name }}{% else %}, {{ user.username }}{% endif %}</h1>
+  <p class="lede">Your books, orders, giving and notifications in one place.</p>
+</div>
+
+<div class="dash stagger">
+  <a class="card dash__tile" href="{% url 'bookstore:library' %}"><span class="dash__icon" aria-hidden="true">📚</span><h3>My books</h3>
+    <p class="muted">Your e-books and {{ order_count }} order{{ order_count|pluralize }}.</p></a>
+  <a class="card dash__tile" href="{% url 'bookstore:cart' %}"><span class="dash__icon" aria-hidden="true">🛒</span><h3>My cart</h3>
+    <p class="muted">{% if cart_items %}{{ cart_items }} item{{ cart_items|pluralize }} waiting.{% else %}Your cart is empty.{% endif %}</p></a>
+  <a class="card dash__tile" href="{% url 'realtime:list' %}"><span class="dash__icon" aria-hidden="true">🔔</span><h3>Notifications</h3>
+    <p class="muted">{% if unread %}<span class="badge">{{ unread }}</span> unread{% else %}You are up to date.{% endif %}</p></a>
+  <a class="card dash__tile" href="{% url 'giving:history' %}"><span class="dash__icon" aria-hidden="true">💝</span><h3>My giving</h3>
+    <p class="muted">{{ donation_count }} gift{{ donation_count|pluralize }} recorded.</p></a>
+  <a class="card dash__tile" href="{% url 'bookstore:list' %}"><span class="dash__icon" aria-hidden="true">🛍️</span><h3>Bookshop</h3>
+    <p class="muted">Browse books and the daily devotional.</p></a>
+  {% if user.is_staff %}<a class="card dash__tile" href="{% url 'admin:index' %}"><span class="dash__icon" aria-hidden="true">⚙️</span><h3>Admin console</h3>
+    <p class="muted">Manage the website.</p></a>{% endif %}
+</div>
+
+<div class="split">
+  <section class="card">
+    <h2 style="margin-top:0">My churches</h2>
+    <ul class="list">
+      {% for m in memberships %}<li><a href="{{ m.branch.get_absolute_url }}">{{ m.branch.name }}</a> <span class="pill">{{ m.get_role_display }}</span>{% if m.is_primary %} <span class="pill gold">Home church</span>{% endif %}</li>
+      {% empty %}<li class="muted">You have not joined a church yet. <a href="{% url 'churches:stations' %}">Find your station</a> and press “Join”.</li>{% endfor %}
+    </ul>
+  </section>
+  <section class="card">
+    <h2 style="margin-top:0">Recent orders</h2>
+    <ul class="list">
+      {% for o in orders %}<li><a href="{{ o.get_absolute_url }}">{{ o.number }}</a> · {{ o.created_at|date:"j M Y" }} · {{ o.total }} {{ o.currency }} <span class="pill">{{ o.get_status_display }}</span></li>
+      {% empty %}<li class="muted">No orders yet.</li>{% endfor %}
+    </ul>
+  </section>
+</div>
+
+<form method="post" action="{% url 'accounts:logout' %}" style="margin-top:1.5rem">{% csrf_token %}<button class="btn ghost" type="submit">Sign out</button></form>
+{% endblock %}
