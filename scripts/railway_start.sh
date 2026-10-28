@@ -7,6 +7,7 @@ python manage.py ensure_admin
 if [ "$RUN_IMPORT" = "1" ]; then
   # One-time loading of the church's districts and stations (set RUN_IMPORT=1, deploy once, then remove it).
   python manage.py import_stations
+  python manage.py import_leaders
   python manage.py seed_books
 fi
 if [ -n "$LOADDATA" ]; then

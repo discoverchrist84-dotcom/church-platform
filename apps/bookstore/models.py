@@ -14,6 +14,10 @@ from apps.core.validators import validate_image
 
 def private_storage():
     """Paid e-book files live outside the public /media/ folder, so they can only be fetched through a checked download link."""
+    if getattr(settings, "MEDIA_STORAGE", "files") == "database":
+        from apps.core.storage import private_database_storage
+
+        return private_database_storage()
     return FileSystemStorage(location=settings.PRIVATE_MEDIA_ROOT)
 
 

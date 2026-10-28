@@ -26,4 +26,9 @@ if settings.DEBUG or settings.SERVE_MEDIA:
     from django.views.static import serve as _serve
 
     _prefix = settings.MEDIA_URL.strip("/")
-    urlpatterns += [re_path(rf"^{_prefix}/(?P<path>.*)$", _serve, {"document_root": settings.MEDIA_ROOT})]
+    if settings.MEDIA_STORAGE == "database" and "S3Storage" not in settings.STORAGES["default"]["BACKEND"]:
+        from apps.core.views import media_from_database
+
+        urlpatterns += [re_path(rf"^{_prefix}/(?P<path>.*)$", media_from_database)]
+    else:
+        urlpatterns += [re_path(rf"^{_prefix}/(?P<path>.*)$", _serve, {"document_root": settings.MEDIA_ROOT})]

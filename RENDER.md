@@ -21,8 +21,11 @@ The error `Could not open requirements file: requirements.txt` happened because 
 ## Good to know (free plan)
 - The website **sleeps** after 15 minutes without visitors and takes about a minute to wake.
 - The free Postgres database **expires after 30 days**: upgrade it before then or you lose the data.
-- There is **no permanent disk** on the free plan, so uploaded pictures and e-books are lost at each deploy.
-  Fix: a paid plan with a Disk mounted at `/data` (set `MEDIA_ROOT=/data/media`, `PRIVATE_MEDIA_ROOT=/data/private_media`),
-  or Cloudflare R2 / S3 (set the `AWS_*` variables in `.env.example`).
+- There is **no permanent disk** on the free plan, so by default uploads would vanish. This project therefore stores
+  uploaded pictures **in the database** automatically on Render (`MEDIA_STORAGE=database`), so they survive restarts and
+  redeploys. They live and die with the database (30-day limit above), so upgrade the database before it expires.
+  On Railway use a Volume (`MEDIA_ROOT=/data/media`, `MEDIA_STORAGE=files`) or set `MEDIA_STORAGE=database` there too.
+  Big photo libraries: use Cloudflare R2 / S3 (the `AWS_*` variables in `.env.example`).
+- Pictures uploaded **before** this change were lost with the old disk; upload them once more.
 - Signing in works automatically on `*.onrender.com`. For your own domain set `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
   (see RAILWAY.md, "Using your own domain").

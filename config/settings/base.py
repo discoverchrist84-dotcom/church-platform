@@ -141,6 +141,12 @@ if AWS_STORAGE_BUCKET_NAME:
     AWS_QUERYSTRING_AUTH = False
     STORAGES["default"] = {"BACKEND": "storages.backends.s3.S3Storage"}
 
+# Hosts whose disk is wiped on every restart (Render's free plan) lose uploaded pictures.
+# MEDIA_STORAGE=database keeps them in the database instead (default on Render; override with files).
+MEDIA_STORAGE = env("MEDIA_STORAGE", default="database" if env("RENDER", default="") else "files")
+if MEDIA_STORAGE == "database" and not AWS_STORAGE_BUCKET_NAME:
+    STORAGES["default"] = {"BACKEND": "apps.core.storage.DatabaseStorage"}
+
 # Upload limits (enforced in media_library API)
 MAX_UPLOAD_MB = env.int("MAX_UPLOAD_MB", default=200)
 

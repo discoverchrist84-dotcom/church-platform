@@ -6,7 +6,7 @@
  *  - API, admin, media:   never cached here (always live).
  * Bump VERSION when you change this file to clear old caches.
  */
-const VERSION = "v8";
+const VERSION = "v9";
 const PAGES = `pages-${VERSION}`;
 const ASSETS = `assets-${VERSION}`;
 const PRIVATE = /^\/(give|notifications)\/|^\/books\/(cart|checkout|orders|library|download)\/|^\/branches\/[^/]+\/(board|groups|prayer|moderation|events\/new|announcements\/new|sermons\/new)\//;

@@ -77,3 +77,20 @@ class SiteSettings(models.Model):
     def load(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
+
+
+class StoredFile(models.Model):
+    """An uploaded file kept in the database (used when the host's disk is wiped on every restart,
+    e.g. Render's free plan). See apps/core/storage.py and the MEDIA_STORAGE setting."""
+
+    name = models.CharField(max_length=500, unique=True)
+    content = models.BinaryField()
+    size = models.PositiveBigIntegerField(default=0)
+    content_type = models.CharField(max_length=100, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "stored upload"
+
+    def __str__(self):
+        return self.name

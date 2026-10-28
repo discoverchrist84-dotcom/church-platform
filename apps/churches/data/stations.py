@@ -6,7 +6,13 @@ Stations 176-177 (struck off Izu District) and the Zones (178-181) are in PENDIN
 because the register does not say where they belong yet.
 """
 
-COUNTRY = {"Cotonuo": "Benin", "Lome-Togo": "Togo"}
+COUNTRY = {"Cotonuo": "Benin", "Lome-Togo": "Togo", "Douala": "Cameroon",
+           "Apo Village, Ngidamangoro, Abuja": "Nigeria", "Arochukwu": "Nigeria"}
+
+# Stations that moved to another district: station name -> district(s) they used to be under.
+MOVED = {"Gbenyedji Station": ["Sikecoji/Akpakpa District", "Akpakpa District"],
+         "Asseyeye Station": ["Sikecoji/Akpakpa District", "Akpakpa District"]}
+RENAMED_DISTRICTS = {"Sikecoji/Akpakpa District": "Akpakpa District"}
 
 DISTRICTS = [
     ("Aba District", [
@@ -201,11 +207,14 @@ DISTRICTS = [
         ("Makoko Station", "Lagos"),
         ("Bariga Station", "Lagos"),
     ]),
-    ("Sikecoji/Akpakpa District", [
+    ("Akpakpa District", [
         ("Port Novo Station", "Cotonuo"),
         ("Seme-Podji Station", "Cotonuo"),
         ("Dedokpo Station", "Cotonuo"),
         ("Djedjelaye Station", "Cotonuo"),
+    ]),
+    ("Sikecodji District", []),
+    ("Lome Togo District", [
         ("Gbenyedji Station", "Lome-Togo"),
         ("Asseyeye Station", "Lome-Togo"),
     ]),
@@ -250,12 +259,15 @@ DISTRICTS = [
         ("Onu Igbere Station", "Izu"),
         ("Ogboko Ozuitem Station", "Izu"),
     ]),
+    # Zones: each is a district with one station of the same name. A third value is the register S/N.
+    ("Arochukwu Zone", [("Arochukwu Station", "Arochukwu", 178)]),
+    ("Cameroon Zone", [("Cameroun Station", "Douala", 180)]),
+    ("Abuja Zone", [("Abuja Station", "Apo Village, Ngidamangoro, Abuja", 181)]),
+    ("Ghana Zone", []),
 ]
 
 # Not imported until the church confirms where they belong.
 PENDING = {
     "struck off Izu District in the register": ["Owerri Nkworji Station", "Udumogwa Station"],
-    "listed as 'Zones' (not areas/districts yet)": [
-        "Arochukwu (Arochukwu)", "Calabar (Calabar)", "Cameroun (Douala)", "Abuja (Apo Village, Ngidamangoro)",
-    ],
+    "Calabar Zone (not placed in any Area yet)": ["Calabar (Calabar), register S/N 179"],
 }

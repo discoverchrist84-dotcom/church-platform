@@ -121,3 +121,18 @@ def service_worker(request):
     response = FileResponse(open(path, "rb"), content_type="application/javascript")
     response["Service-Worker-Allowed"] = "/"
     return response
+
+
+def media_from_database(request, path):
+    """Serve an uploaded picture that is stored in the database (MEDIA_STORAGE=database)."""
+    from django.http import Http404, HttpResponse
+
+    from .models import StoredFile
+
+    row = StoredFile.objects.filter(name=path).first()
+    if row is None:
+        raise Http404
+    resp = HttpResponse(bytes(row.content), content_type=row.content_type or "application/octet-stream")
+    resp["Cache-Control"] = "public, max-age=86400"
+    resp["X-Content-Type-Options"] = "nosniff"
+    return resp
