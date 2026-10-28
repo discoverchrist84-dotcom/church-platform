@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}News · {{ SITE_BRAND }}{% endblock %}
+{% block description %}News and updates from inside the church and from the wider community, nation and world.{% endblock %}
+{% block content %}
+<div class="page-head">
+  <span class="kicker">News &amp; updates</span>
+  <h1>News</h1>
+  <p class="lede">What is happening in our church and regions, and in the wider Christian community, the nation and the world.
+    <a href="{% url 'news:feed' %}">RSS feed</a></p>
+</div>
+
+<nav class="tabs structure-tabs" aria-label="News type">
+  <a href="{% url 'news:list' %}"{% if not scope %} aria-current="page"{% endif %}>All news</a>
+  {% for v, l in scopes %}<a href="?scope={{ v }}"{% if scope == v %} aria-current="page"{% endif %}>{{ l }}</a>{% endfor %}
+</nav>
+
+<form class="toolbar" method="get" role="search" data-autosubmit>
+  {% if scope %}<input type="hidden" name="scope" value="{{ scope }}">{% endif %}
+  <div class="toolbar__search"><input type="search" name="q" value="{{ q }}" placeholder="Search the news" aria-label="Search news"></div>
+  <label class="toolbar__sel"><span>Topic</span><select name="topic"><option value="">All topics</option>
+    {% for v, l in topics %}<option value="{{ v }}"{% if topic == v %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+  <label class="toolbar__sel"><span>Area / district</span><select name="unit"><option value="">Everywhere</option>
+    {% for u in units %}<option value="{{ u.slug }}"{% if u.slug == unit_slug %} selected{% endif %}>{{ u.name }}</option>{% endfor %}</select></label>
+  <button class="btn" type="submit">Search</button>
+</form>
+
+<p class="resultbar"><strong>{{ count }}</strong> stor{{ count|pluralize:"y,ies" }}{% if q or topic or unit_slug or scope %} · <a href="{% url 'news:list' %}">Clear filters</a>{% endif %}</p>
+
+{% if page.object_list %}
+  <div class="grid news stagger">{% for n in page.object_list %}{% include "news/_card.html" with n=n %}{% endfor %}</div>
+  {% include "components/pager.html" with prev_label="← Newer" next_label="Older →" %}
+{% else %}
+  <div class="empty">No news yet.{% if user.is_staff %} <a href="{% url 'admin:news_newsarticle_add' %}">Add the first story</a>.{% endif %}</div>
+{% endif %}
+{% endblock %}

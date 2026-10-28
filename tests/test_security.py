@@ -59,3 +59,21 @@ def test_forwarded_header_ignored_unless_trusted(client):
     assert client_ip(req) == "1.2.3.4"
     with override_settings(TRUST_PROXY_HEADERS=True):
         assert client_ip(req) == "9.9.9.9"
+
+
+def test_ensure_admin_creates_and_resets(monkeypatch, django_user_model):
+    from django.core.management import call_command
+    monkeypatch.setenv("DJANGO_SUPERUSER_USERNAME", "boss")
+    monkeypatch.setenv("DJANGO_SUPERUSER_EMAIL", "boss@example.org")
+    monkeypatch.setenv("DJANGO_SUPERUSER_PASSWORD", "first-pass-123")
+    call_command("ensure_admin")
+    u = django_user_model.objects.get(username="boss")
+    assert u.is_superuser and u.check_password("first-pass-123")
+    monkeypatch.setenv("DJANGO_SUPERUSER_PASSWORD", "second-pass-456")
+    call_command("ensure_admin")
+    u.refresh_from_db()
+    assert u.check_password("first-pass-123")  # not changed without the reset flag
+    monkeypatch.setenv("ADMIN_RESET_PASSWORD", "1")
+    call_command("ensure_admin")
+    u.refresh_from_db()
+    assert u.check_password("second-pass-456")

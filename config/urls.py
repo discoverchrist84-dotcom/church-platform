@@ -16,6 +16,7 @@ urlpatterns = [
     path("leadership/", include("apps.leadership.urls")),
     path("give/", include("apps.giving.urls")),
     path("books/", include("apps.bookstore.urls")),
+    path("news/", include("apps.news.urls")),
     path("notifications/", include("apps.realtime.urls")),
     path("", include("apps.core.urls")),
 ]

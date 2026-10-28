@@ -14,6 +14,21 @@ SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=False)
 TRUST_PROXY_HEADERS = env.bool("TRUST_PROXY_HEADERS", default=True)
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
+# --- Railway (and similar hosts) ------------------------------------------------
+# Signing in is a POST, and Django refuses it (403 "CSRF verification failed") unless the site's own
+# https address is trusted. Railway tells us its address, so trust it automatically.
+_domains = [d for d in (env("RAILWAY_PUBLIC_DOMAIN", default=""), env("RAILWAY_STATIC_URL", default="")) if d]
+for _d in _domains:
+    _d = _d.replace("https://", "").replace("http://", "").strip("/")
+    if _d not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_d)
+    if f"https://{_d}" not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(f"https://{_d}")
+if env.bool("TRUST_RAILWAY_DOMAINS", default=bool(_domains)):
+    ALLOWED_HOSTS.append(".up.railway.app")
+    CSRF_TRUSTED_ORIGINS.append("https://*.up.railway.app")
+# Your own domain: set ALLOWED_HOSTS=yourchurch.org,www.yourchurch.org and CSRF_TRUSTED_ORIGINS=https://yourchurch.org,https://www.yourchurch.org
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST", default="localhost")
 EMAIL_PORT = env.int("EMAIL_PORT", default=587)

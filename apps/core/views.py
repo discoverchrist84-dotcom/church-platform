@@ -40,6 +40,12 @@ def _spotlight():
     return council, [m for m in council.members.all() if m.is_current][:6]
 
 
+def _home_news():
+    from apps.news.models import NewsArticle
+
+    return list(NewsArticle.objects.live().select_related("branch")[:3])
+
+
 def _home_books():
     from apps.bookstore.models import Book
 
@@ -64,6 +70,7 @@ def home(request):
             "spot_council": council,
             "spot_members": council_members,
             "hq": Branch.objects.filter(is_national_headquarters=True, is_active=True).first(),
+            "home_news": _home_news(),
             "home_books": _home_books(),
             "devotional": _home_devotional(),
             "eras": Era.objects.all()[:6],

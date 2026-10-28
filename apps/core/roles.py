@@ -11,7 +11,7 @@ from django.contrib.auth.models import Group, Permission
 
 log = logging.getLogger(__name__)
 
-CHURCH_APPS = ["core", "accounts", "churches", "leadership", "history", "community", "media_library", "giving", "bookstore", "realtime"]
+CHURCH_APPS = ["core", "accounts", "churches", "leadership", "history", "community", "media_library", "giving", "bookstore", "news", "realtime"]
 ADMIN_GROUP = "Church administrators"
 EDITOR_GROUP = "Content editors"
 MODERATOR_GROUP = "Moderators"
@@ -22,6 +22,7 @@ EDITOR_MODELS = {
     "churches": {"branchleader"},
     "community": {"announcement", "event", "ministry"},
     "media_library": None,
+    "news": None,
     "bookstore": {"book", "author", "category", "chapter", "devotionalentry"},
 }
 MODERATOR_MODELS = {"community": {"post", "comment", "prayerrequest", "report"}}

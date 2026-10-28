@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "apps.media_library",
     "apps.giving",
     "apps.bookstore",
+    "apps.news",
     "apps.realtime",
 ]
 if USING_POSTGRES:
@@ -121,9 +122,9 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 SERVE_MEDIA = env.bool("SERVE_MEDIA", default=True)
 MAX_IMAGE_MB = env.int("MAX_IMAGE_MB", default=25)  # pictures are shrunk automatically after upload
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = env.path("MEDIA_ROOT", default=str(BASE_DIR / "media"))  # on Railway: a volume, e.g. /data/media
 # Paid e-books are kept here, NOT under /media/, so they can only be downloaded by people who bought them.
-PRIVATE_MEDIA_ROOT = BASE_DIR / "private_media"
+PRIVATE_MEDIA_ROOT = env.path("PRIVATE_MEDIA_ROOT", default=str(BASE_DIR / "private_media"))
 BOOKSTORE_SHIPPING_FEE = env("BOOKSTORE_SHIPPING_FEE", default="0")  # flat delivery fee per order with printed books
 
 STORAGES = {

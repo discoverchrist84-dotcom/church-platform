@@ -13,5 +13,6 @@ COPY . .
 RUN SECRET_KEY=build-only python manage.py collectstatic --noinput
 
 EXPOSE 8000
-# Daphne serves HTTP and WebSockets from one process.
-CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "config.asgi:application"]
+# Runs database updates, creates the first admin (if asked), then starts Daphne on the host's $PORT
+# (HTTP and WebSockets from one process).
+CMD ["sh", "scripts/railway_start.sh"]

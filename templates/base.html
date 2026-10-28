@@ -56,6 +56,7 @@
       <nav id="nav" class="nav" aria-label="Main">
         {% with ns=request.resolver_match.namespace %}
         <a href="{% url 'history:timeline' %}"{% if ns == 'history' %} aria-current="page"{% endif %}>History</a>
+        <a href="{% url 'news:list' %}"{% if ns == 'news' %} aria-current="page"{% endif %}>News</a>
         <a href="{% url 'churches:list' %}"{% if ns == 'churches' or ns == 'community' or ns == 'media_library' %} aria-current="page"{% endif %}>Structure</a>
         <a href="{% url 'leadership:list' %}"{% if ns == 'leadership' %} aria-current="page"{% endif %}>Leadership</a>
         <a href="{% url 'bookstore:list' %}"{% if ns == 'bookstore' %} aria-current="page"{% endif %}>Books</a>
@@ -107,6 +108,7 @@
           <h4>Explore</h4>
           <ul>
             <li><a href="{% url 'history:timeline' %}">Church history</a></li>
+            <li><a href="{% url 'news:list' %}">News</a></li>
             <li><a href="{% url 'churches:list' %}">Our structure</a></li>
             <li><a href="{% url 'leadership:list' %}">Leadership</a></li>
             <li><a href="{% url 'history:search' %}">Search</a></li>

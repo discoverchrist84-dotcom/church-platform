@@ -209,3 +209,12 @@ python manage.py seed_books        # creates "Manuels (Ascension Power)" and "Li
 - **Admin → Books & shop:** books (printed price + stock, e-book price + private PDF, cover, chapters, "free to read"), authors (our ministers or other churches), categories, devotional readings (one per day) and orders.
 - **Payments:** bank transfer and pay-on-delivery work now (put your bank details in *Website settings → Bookshop payments*; mark the order *paid* in the admin). Online card payment is test-mode only until a real gateway is connected in `apps/giving/providers.py`.
 - **E-books** are stored in `private_media/` (not public) and downloaded only by people with a paid order.
+
+
+## News (v15)
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+- **Navbar → News** (`/news/`): stories from **inside the church** and from **outside** (other churches, community, nation, world). Filter by type, topic and area/district; search; RSS feed at `/news/feed/`; latest three on the home page.
+- **Admin → News:** write a story, add a picture and (for outside news) the source and link; pin it; save as a draft; or set a future "publish on" time to schedule it. Content editors can add and edit news.

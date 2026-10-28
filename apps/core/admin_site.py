@@ -43,6 +43,9 @@ SECTIONS = [
         ("giving", "Fund", "General fund, building fund and other giving purposes."),
         ("giving", "Donation", "Every gift. Records are kept as evidence and are not edited."),
     ]),
+    ("news", "News", "Stories from inside the church and from the wider world, shown on the News page and home page.", "📰", [
+        ("news", "NewsArticle", "Write, schedule, pin or hide news stories."),
+    ]),
     ("books", "Books & shop", "The bookshop and library: books, e-books, daily devotional readings and orders.", "📚", [
         ("bookstore", "Book", "Add or edit books: price, stock, e-book file, cover and chapters to read online."),
         ("bookstore", "Order", "Orders from the shop. Mark bank transfers as paid and orders as sent."),
@@ -149,6 +152,7 @@ class ChurchAdminSite(admin.AdminSite):
     def _quick_actions(self, request):
         wanted = [
             ("➕", "Add an area, district or station", "churches", "branch"),
+            ("📰", "Post a news story", "news", "newsarticle"),
             ("📚", "Add a book", "bookstore", "book"),
             ("🌅", "Add a devotional reading", "bookstore", "devotionalentry"),
             ("🧑‍💼", "Add a superintendent or pastor", "churches", "branchleader"),

@@ -1,0 +1,11 @@
+<a class="card newscard" href="{{ n.get_absolute_url }}">
+  {% if n.image|file_url %}<img class="newscard__img" src="{{ n.image|file_url }}" alt="" loading="lazy" width="400" height="240">{% endif %}
+  <span class="newscard__tags">
+    <span class="pill{% if n.scope == 'outside' %} gold{% endif %}">{{ n.get_scope_display }}</span>
+    <span class="pill">{{ n.get_topic_display }}</span>
+    {% if n.is_pinned %}<span class="pill ok">Pinned</span>{% endif %}
+  </span>
+  <h3>{{ n.title }}</h3>
+  <p class="muted">{{ n.excerpt }}</p>
+  <small class="muted">{{ n.published_at|date:"j M Y" }}{% if n.branch %} · {{ n.branch.name }}{% elif n.place %} · {{ n.place }}{% endif %}</small>
+</a>

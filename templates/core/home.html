@@ -92,6 +92,18 @@
   </div>
 </section>
 
+{% if home_news %}
+<!-- ============ NEWS ============ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section-head reveal"><span class="kicker">News &amp; updates</span><h2>What is happening</h2>
+      <p class="lede">In our church and regions, and in the wider Christian community, the nation and the world.</p></div>
+    <div class="grid news stagger">{% for n in home_news %}{% include "news/_card.html" with n=n %}{% endfor %}</div>
+    <p style="text-align:center;margin-top:1.5rem" class="reveal"><a class="btn navy" href="{% url 'news:list' %}">All news</a></p>
+  </div>
+</section>
+{% endif %}
+
 {% if devotional or home_books %}
 <!-- ============ BOOKS & DEVOTIONAL ============ -->
 <section class="section">
