@@ -8,6 +8,7 @@ from io import BytesIO
 
 from django.core.files.base import File
 from django.core.files.storage import Storage
+from django.db import DatabaseError
 from django.utils.deconstruct import deconstructible
 
 
@@ -41,7 +42,10 @@ class DatabaseStorage(Storage):
         return name
 
     def exists(self, name):
-        return self._model().objects.filter(name=self._key(name)).exists()
+        try:
+            return self._model().objects.filter(name=self._key(name)).exists()
+        except DatabaseError:  # table not created yet (migration missing): treat as "no picture", never crash a page
+            return False
 
     def delete(self, name):
         self._model().objects.filter(name=self._key(name)).delete()

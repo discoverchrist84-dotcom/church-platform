@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from apps.core.admin_base import FriendlyAdmin, flag_action, picture_preview
+from apps.core.admin_base import FriendlyAdmin, flag_action, picture_preview, safe_url
 
 from .models import Author, Book, Category, Chapter, DevotionalEntry, Order, OrderItem
 
@@ -46,7 +46,7 @@ class BookAdmin(FriendlyAdmin):
 
     @admin.display(description="")
     def thumb(self, obj):
-        url = obj.cover.url if obj.cover and obj.cover.storage.exists(obj.cover.name) else ""
+        url = safe_url(obj.cover)
         return format_html('<img src="{}" class="athumb">', url) if url else "📖"
 
     @admin.display(description="Saved cover")

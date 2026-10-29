@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from apps.core.admin_base import FriendlyAdmin, flag_action, picture_preview
+from apps.core.admin_base import FriendlyAdmin, flag_action, picture_preview, safe_url
 
 from .models import Branch, BranchLeader, Membership
 
@@ -95,7 +95,7 @@ class BranchLeaderAdmin(FriendlyAdmin):
 
     @admin.display(description="")
     def thumb(self, obj):
-        url = obj.photo.url if obj.photo and obj.photo.storage.exists(obj.photo.name) else ""
+        url = safe_url(obj.photo)
         return format_html('<img src="{}" class="athumb">', url) if url else "👤"
 
 

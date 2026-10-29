@@ -130,3 +130,14 @@ def picture_preview(obj, field):
         return format_html('<img class="apreview" src="{}" alt=""><small>{}</small>', f.url, f.name)
     except Exception:
         return "The picture could not be read. Upload it again."
+
+
+def safe_url(field):
+    """URL of an uploaded file for a list thumbnail, or "" if there is none or it cannot be read.
+    A missing or unreadable picture must never turn an admin list into a "Server Error"."""
+    if not field:
+        return ""
+    try:
+        return field.url if field.storage.exists(field.name) else ""
+    except Exception:
+        return ""
