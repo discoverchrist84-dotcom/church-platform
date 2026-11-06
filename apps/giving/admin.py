@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from apps.core.admin_base import FriendlyAdmin, flag_action
 
-from .models import Donation, Fund
+from .models import Donation, Fund, GivingAccount
 
 
 @admin.register(Fund)
@@ -41,3 +41,14 @@ class DonationAdmin(FriendlyAdmin):
 
     def get_changeform_initial_data(self, request):
         return {"provider": "manual", "status": "succeeded"}
+
+
+@admin.register(GivingAccount)
+class GivingAccountAdmin(FriendlyAdmin):
+    help_list = ("The accounts shown on the Give page. Add them when the church decides which accounts to use; "
+                 "untick 'active' to hide one.")
+    help_form = "Enter the bank or mobile-money details exactly as the church wants them published. Only administrators can change them."
+    list_display = ("title", "kind", "bank_name", "account_name", "account_number", "currency", "country", "order", "is_active")
+    list_editable = ("order", "is_active")
+    list_filter = ("kind", "is_active", "country")
+    search_fields = ("title", "bank_name", "account_name", "country")

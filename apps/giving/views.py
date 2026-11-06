@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from .forms import GiveForm
-from .models import Donation, Fund
+from .models import Donation, Fund, GivingAccount
 from .providers import WebhookResult
 from .services import ProviderUnavailable, apply_result, queue_receipt, start_checkout
 
@@ -17,6 +17,12 @@ PRESETS = getattr(settings, "GIVING_PRESETS", (10, 25, 50, 100))
 
 def _test_mode():
     return settings.DEBUG and settings.PAYMENT_PROVIDER == "dummy"
+
+
+def _online_ready():
+    """Card payments are shown only in test mode for now. When the church chooses a provider (Paystack,
+    Flutterwave...) and it is implemented, return True here once it is configured."""
+    return _test_mode()
 
 
 def give(request):
@@ -60,6 +66,8 @@ def give(request):
             "presets": PRESETS,
             "currency": settings.DEFAULT_CURRENCY,
             "has_funds": funds.exists(),
+            "online": _online_ready(),
+            "accounts": GivingAccount.objects.filter(is_active=True).select_related("fund"),
             "test_mode": _test_mode(),
         },
     )

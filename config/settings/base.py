@@ -122,9 +122,13 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 SERVE_MEDIA = env.bool("SERVE_MEDIA", default=True)
 MAX_IMAGE_MB = env.int("MAX_IMAGE_MB", default=25)  # pictures are shrunk automatically after upload
 MEDIA_URL = "/media/"
-MEDIA_ROOT = env.path("MEDIA_ROOT", default=str(BASE_DIR / "media"))  # on Railway: a volume, e.g. /data/media
+_VOLUME = env("RAILWAY_VOLUME_MOUNT_PATH", default="")  # set by Railway when a Volume is attached
+MEDIA_ROOT = env.path("MEDIA_ROOT", default=(f"{_VOLUME}/media" if _VOLUME else str(BASE_DIR / "media")))  # on Railway: a volume, e.g. /data/media
 # Paid e-books are kept here, NOT under /media/, so they can only be downloaded by people who bought them.
-PRIVATE_MEDIA_ROOT = env.path("PRIVATE_MEDIA_ROOT", default=str(BASE_DIR / "private_media"))
+PRIVATE_MEDIA_ROOT = env.path("PRIVATE_MEDIA_ROOT", default=(f"{_VOLUME}/private_media" if _VOLUME else str(BASE_DIR / "private_media")))
+# Church rules: ministers are transferred after this many years in a station; council terms last this long.
+MINISTER_POSTING_YEARS = env.int("MINISTER_POSTING_YEARS", default=4)
+COUNCIL_TERM_YEARS = env.int("COUNCIL_TERM_YEARS", default=4)
 BOOKSTORE_SHIPPING_FEE = env("BOOKSTORE_SHIPPING_FEE", default="0")  # flat delivery fee per order with printed books
 
 STORAGES = {
@@ -143,7 +147,8 @@ if AWS_STORAGE_BUCKET_NAME:
 
 # Hosts whose disk is wiped on every restart (Render's free plan) lose uploaded pictures.
 # MEDIA_STORAGE=database keeps them in the database instead (default on Render; override with files).
-MEDIA_STORAGE = env("MEDIA_STORAGE", default="database" if env("RENDER", default="") else "files")
+_throwaway_disk = bool(env("RENDER", default="") or (env("RAILWAY_ENVIRONMENT", default="") and not _VOLUME))
+MEDIA_STORAGE = env("MEDIA_STORAGE", default="database" if _throwaway_disk else "files")
 if MEDIA_STORAGE == "database" and not AWS_STORAGE_BUCKET_NAME:
     STORAGES["default"] = {"BACKEND": "apps.core.storage.DatabaseStorage"}
 

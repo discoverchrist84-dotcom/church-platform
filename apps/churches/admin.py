@@ -6,14 +6,28 @@ from apps.core.admin_base import FriendlyAdmin, flag_action, picture_preview, sa
 from .models import Branch, BranchLeader, Membership
 
 
+class PostingFilter(admin.SimpleListFilter):
+    title = "transfer status"
+    parameter_name = "posting"
+
+    def lookups(self, request, model_admin):
+        return [("overdue", "Overdue for transfer"), ("soon", "Due within 6 months"), ("serving", "Serving")]
+
+    def queryset(self, request, queryset):
+        v = self.value()
+        if not v:
+            return queryset
+        want = {"overdue": "overdue", "soon": "due soon", "serving": "serving"}[v]
+        return queryset.filter(pk__in=[o.pk for o in queryset.filter(is_current=True) if o.posting_status == want])
+
+
 class LeaderInline(admin.StackedInline):
     model = BranchLeader
     extra = 0
-    autocomplete_fields = ("user",)
     verbose_name = "leader"
     verbose_name_plural = "Leaders: superintendent (areas and districts), pastor (stations) and other officers"
-    fields = (("name", "role", "title"), ("photo", "photo_preview"), "bio", ("term_start", "is_current", "order"),
-              ("phone", "email", "show_contact"), "user")
+    fields = (("name", "role", "title"), ("photo", "photo_preview"), "bio", ("posted_on", "ended_on", "is_current", "order"),
+              ("phone", "email", "show_contact"))
     readonly_fields = ("photo_preview",)
 
     @admin.display(description="Saved photo")
@@ -25,7 +39,7 @@ class MembershipInline(admin.TabularInline):
     model = Membership
     extra = 0
     autocomplete_fields = ("user",)
-    verbose_name_plural = "People who belong to this unit (and who may manage it)"
+    verbose_name_plural = "People who belong to this unit (only an administrator can give someone a management role)"
 
 
 @admin.register(Branch)
@@ -85,13 +99,33 @@ class BranchAdmin(FriendlyAdmin):
 
 @admin.register(BranchLeader)
 class BranchLeaderAdmin(FriendlyAdmin):
-    help_list = "Superintendents (areas and districts), pastors (stations) and other officers. Untick 'current' when someone steps down, so their history is kept."
-    help_form = "Pick the unit and the role. Link a user account if this person should be able to manage their unit on the website."
-    list_display = ("thumb", "name", "role", "branch", "is_current")
+    help_list = "Superintendents (areas and districts), pastors (stations) and other officers. Ministers are posted for 4 years. Untick 'current' when someone steps down, so their history is kept."
+    help_form = ("Only administrators add or change ministers. Pick the unit and the role, and enter the date the minister was posted: the site "
+                 "works out the 4-year transfer date. To transfer someone, untick 'current' (their history is kept) and add the next minister.")
+    list_display = ("thumb", "name", "role", "branch", "posted_on", "transfer_due", "posting", "is_current")
     list_display_links = ("thumb", "name")
-    list_filter = ("role", "is_current", "branch__level")
+    list_filter = ("role", "is_current", "branch__level", PostingFilter)
     search_fields = ("name", "branch__name")
-    autocomplete_fields = ("branch", "user")
+    autocomplete_fields = ("branch",)
+    actions = ["end_posting"]
+
+    @admin.display(description="Transfer due")
+    def transfer_due(self, obj):
+        d = obj.transfer_due_on
+        return d.strftime("%b %Y") if d else "—"
+
+    @admin.display(description="Posting")
+    def posting(self, obj):
+        return obj.posting_status or "—"
+
+    @admin.action(description="Transfer: end the posting of selected ministers (history is kept)")
+    def end_posting(self, request, queryset):
+        n = 0
+        for obj in queryset.filter(is_current=True):
+            obj.is_current = False
+            obj.save()
+            n += 1
+        self.message_user(request, f"{n} posting(s) ended. Add the new minister for each unit.")
 
     @admin.display(description="")
     def thumb(self, obj):

@@ -5,7 +5,7 @@ from django.contrib.syndication.views import Feed
 
 from apps.churches.models import Branch
 
-from .models import NewsArticle
+from .models import Bulletin, NewsArticle
 
 PAGE_SIZE = 9
 
@@ -65,3 +65,14 @@ class NewsFeed(Feed):
 
     def item_pubdate(self, item):
         return item.published_at
+
+
+def bulletin_list(request):
+    qs = Bulletin.visible_to(request.user)
+    page = Paginator(qs, 10).get_page(request.GET.get("page"))
+    return render(request, "news/bulletins.html", {"page": page})
+
+
+def bulletin_detail(request, pk):
+    b = get_object_or_404(Bulletin.visible_to(request.user), pk=pk)
+    return render(request, "news/bulletin.html", {"b": b})

@@ -55,6 +55,10 @@ class CouncilMember(TimeStampedModel):
     title = models.CharField(max_length=120, blank=True, help_text="Office, e.g. General Overseer, Secretary.")
     photo = models.ImageField(upload_to="councils/members/", blank=True, validators=[_check_photo])
     bio = models.TextField(blank=True)
+    elected_on = models.DateField(
+        "elected / took office on", null=True, blank=True,
+        help_text="Council terms last 4 years, then an election is held. With this date the site works out when the term ends.",
+    )
     term_start = models.PositiveSmallIntegerField("served from (year)", null=True, blank=True)
     term_end = models.PositiveSmallIntegerField("served until (year)", null=True, blank=True)
     is_current = models.BooleanField(default=True, help_text="Untick for past office holders.")
@@ -77,7 +81,46 @@ class CouncilMember(TimeStampedModel):
         return "".join(p[0] for p in (parts[:1] + parts[-1:] if len(parts) > 1 else parts[:1])).upper()
 
     @property
+    def term_ends_on(self):
+        if not self.elected_on or not self.is_current:
+            return None
+        from django.conf import settings as dj
+
+        years = getattr(dj, "COUNCIL_TERM_YEARS", 4)
+        try:
+            return self.elected_on.replace(year=self.elected_on.year + years)
+        except ValueError:
+            return self.elected_on.replace(year=self.elected_on.year + years, day=28)
+
+    @property
+    def election_status(self):
+        """'' (no date), 'serving', 'election due soon' (within 6 months) or 'term ended'."""
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        end = self.term_ends_on
+        if not end:
+            return ""
+        today = timezone.localdate()
+        if end < today:
+            return "term ended"
+        return "election due soon" if end <= today + timedelta(days=183) else "serving"
+
+    def save(self, *args, **kwargs):
+        if self.elected_on:
+            self.term_start = self.elected_on.year
+        if not self.is_current and not self.term_end:
+            from django.utils import timezone
+
+            self.term_end = timezone.localdate().year
+        super().save(*args, **kwargs)
+
+    @property
     def tenure(self):
+        end = self.term_ends_on
+        if end:
+            return f"{self.elected_on.year}–{end.year}"
         if self.term_start and self.term_end:
             return f"{self.term_start}–{self.term_end}"
         if self.term_start:

@@ -49,3 +49,32 @@ class Donation(TimeStampedModel):
 
     def __str__(self):
         return f"{self.amount} {self.currency} -> {self.fund} ({self.status})"
+
+
+class GivingAccount(TimeStampedModel):
+    """A bank or mobile-money account the church publishes for gifts. Entered by an administrator;
+    nothing is shown on the Give page until at least one account is active."""
+
+    class Kind(models.TextChoices):
+        BANK = "bank", "Bank account"
+        MOBILE = "mobile", "Mobile money"
+        OTHER = "other", "Other"
+
+    title = models.CharField(max_length=160, help_text="What it is for, e.g. 'Tithes & offerings' or 'Building fund'.")
+    kind = models.CharField(max_length=8, choices=Kind.choices, default=Kind.BANK)
+    fund = models.ForeignKey(Fund, null=True, blank=True, on_delete=models.SET_NULL, related_name="accounts",
+                             help_text="Optional: the fund this account is for.")
+    bank_name = models.CharField("bank / provider", max_length=120, blank=True)
+    account_name = models.CharField(max_length=160, blank=True)
+    account_number = models.CharField(max_length=60, blank=True)
+    currency = models.CharField(max_length=3, default="NGN")
+    country = models.CharField(max_length=80, blank=True, help_text="For example Nigeria, Cameroon, Togo.")
+    instructions = models.TextField(blank=True, help_text="Anything the giver should do, e.g. 'Use your name and station as the reference'.")
+    is_active = models.BooleanField(default=True)
+    order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "title"]
+
+    def __str__(self):
+        return self.title

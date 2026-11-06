@@ -22,6 +22,14 @@
     <p class="muted">Manage the website.</p></a>{% endif %}
 </div>
 
+{% if bulletins %}
+<section class="card" style="margin-bottom:1rem">
+  <h2 style="margin-top:0">Announcements from the National Headquarters</h2>
+  <ul class="list">{% for b in bulletins %}<li>{% if b.is_urgent %}<span class="pill gold">URGENT</span> {% endif %}<a href="{{ b.get_absolute_url }}">{{ b.title }}</a> <span class="muted">· {{ b.published_at|date:"j M" }}</span></li>{% endfor %}</ul>
+  <a href="{% url 'news:bulletins' %}">All announcements</a>
+</section>
+{% endif %}
+
 <div class="split">
   <section class="card">
     <h2 style="margin-top:0">My churches</h2>

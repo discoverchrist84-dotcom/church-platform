@@ -33,3 +33,16 @@ Using your own domain (for example `yourchurch.org`)? Add these variables as wel
 - **"Wrong password" for a new admin** → set `ADMIN_RESET_PASSWORD=1` with the `DJANGO_SUPERUSER_*` variables, redeploy once, then remove `ADMIN_RESET_PASSWORD`.
 - **"Too many attempts"** → wait 15 minutes or redeploy (the counter resets).
 - **Users vanish after a deploy** → `DATABASE_URL` is not pointing to Postgres.
+
+
+## Pictures, backups and who may edit (v23)
+
+- **Pictures survive on Railway** in one of two ways. (1) Add a **Volume** to the service (mount path `/data`): the site detects it
+  automatically and keeps pictures and e-books there. (2) Without a Volume, pictures are kept inside the Postgres database
+  (`MEDIA_STORAGE=database` is chosen automatically). Either way they stay when you redeploy.
+- **Backups:** sign in to `/admin/` as a full administrator and press **Download a full backup** on the dashboard. Do this regularly and
+  keep the file somewhere safe. From a terminal: `python manage.py backup_data`. Railway's own database backups (paid plans) are also worth switching on.
+- **Moving from Render to Railway:** deploy on Railway with `RUN_IMPORT=1` (loads the districts, stations, areas and superintendents), then upload
+  pictures again, or restore a backup with `python manage.py loaddata data.json`.
+- **Only administrators** add or change superintendents, pastors and General Council members. Ministers are posted for 4 years and council
+  terms last 4 years; the admin dashboard lists those due for transfer or election.

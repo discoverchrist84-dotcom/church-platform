@@ -2,7 +2,7 @@
 
 * Superuser ............ can do everything (set with the "Give full admin access" action).
 * Church administrators  everything on the church's content, people and website settings, but not Django's own system tables.
-* Content editors ...... add/change history, events, announcements, sermons, leaders and councils (no deleting).
+* Content editors ...... add/change history, events, announcements, sermons, news and books (no deleting). Only Church administrators change leaders, ministers and councils.
 * Moderators ........... review posts, comments, prayer requests and reports (hide / resolve, no deleting).
 """
 import logging
@@ -18,8 +18,6 @@ MODERATOR_GROUP = "Moderators"
 
 EDITOR_MODELS = {
     "history": None,  # None = every model in the app
-    "leadership": None,
-    "churches": {"branchleader"},
     "community": {"announcement", "event", "ministry"},
     "media_library": None,
     "news": None,

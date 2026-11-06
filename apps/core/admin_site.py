@@ -41,9 +41,11 @@ SECTIONS = [
     ]),
     ("giving", "Giving", "Funds people can give to, and every gift received.", "💝", [
         ("giving", "Fund", "General fund, building fund and other giving purposes."),
+        ("giving", "GivingAccount", "The bank and mobile-money accounts shown on the Give page."),
         ("giving", "Donation", "Every gift. Records are kept as evidence and are not edited."),
     ]),
     ("news", "News", "Stories from inside the church and from the wider world, shown on the News page and home page.", "📰", [
+        ("news", "Bulletin", "Official notices from the National Headquarters to the whole church or chosen areas, districts and stations."),
         ("news", "NewsArticle", "Write, schedule, pin or hide news stories."),
     ]),
     ("books", "Books & shop", "The bookshop and library: books, e-books, daily devotional readings and orders.", "📚", [
@@ -108,6 +110,27 @@ class ChurchAdminSite(admin.AdminSite):
             })
         return sections
 
+    # --- backup (superusers only) ---------------------------------------------
+    def get_urls(self):
+        from django.urls import path
+
+        return [path("backup/", self.admin_view(self.backup_view), name="backup")] + super().get_urls()
+
+    def backup_view(self, request):
+        import tempfile
+
+        from django.http import FileResponse, HttpResponseForbidden
+
+        from apps.core.backup import write_backup
+
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("Only a full administrator can download a backup.")
+        tmp = tempfile.TemporaryFile()
+        write_backup(tmp)
+        tmp.seek(0)
+        return FileResponse(tmp, as_attachment=True, content_type="application/zip",
+                            filename=f"church-backup-{timezone.localdate():%Y-%m-%d}.zip")
+
     # --- dashboard -----------------------------------------------------------
     def index(self, request, extra_context=None):
         extra = {
@@ -152,6 +175,7 @@ class ChurchAdminSite(admin.AdminSite):
     def _quick_actions(self, request):
         wanted = [
             ("➕", "Add an area, district or station", "churches", "branch"),
+            ("📢", "Send an HQ announcement", "news", "bulletin"),
             ("📰", "Post a news story", "news", "newsarticle"),
             ("📚", "Add a book", "bookstore", "book"),
             ("🌅", "Add a devotional reading", "bookstore", "devotionalentry"),
@@ -163,11 +187,15 @@ class ChurchAdminSite(admin.AdminSite):
             ("📜", "Add a history event", "history", "historicalevent"),
             ("🔑", "Add a user", "accounts", "user"),
         ]
+        if request.user.is_superuser:
+            out_pre = [{"icon": "💾", "label": "Download a full backup", "url": reverse(f"{self.name}:backup")}]
+        else:
+            out_pre = []
         if request.user.has_perm("core.change_sitesettings"):
             out_first = [{"icon": "⚙️", "label": "Change site name, logo or banner", "url": reverse(f"{self.name}:core_sitesettings_changelist")}]
         else:
             out_first = []
-        out = list(out_first)
+        out = list(out_first) + out_pre
         for icon, label, app, model in wanted:
             if request.user.has_perm(f"{app}.add_{model}"):
                 try:
@@ -199,6 +227,16 @@ class ChurchAdminSite(admin.AdminSite):
         ).filter(~Exists(BranchLeader.objects.filter(branch=OuterRef("pk"), role="superintendent", is_current=True)))
         add("churches.view_branch", "areas/districts without a superintendent", no_head.count(),
             "churches_branch_changelist", "?level__in=region,district")
+        from apps.leadership.models import CouncilMember
+
+        due = [l for l in BranchLeader.objects.filter(is_current=True).exclude(posted_on=None).select_related("branch")
+               if l.posting_status in ("overdue", "due soon")]
+        add("churches.view_branchleader", "ministers due for transfer within 6 months", len(due),
+            "churches_branchleader_changelist", "?is_current__exact=1")
+        ended = [m for m in CouncilMember.objects.filter(is_current=True).exclude(elected_on=None)
+                 if m.election_status in ("term ended", "election due soon")]
+        add("leadership.view_councilmember", "council members whose 4-year term is ending (election)", len(ended),
+            "leadership_councilmember_changelist", "?is_current__exact=1")
         add("history.view_historicalevent", "history events still in draft",
             HistoricalEvent.objects.exclude(status="published").count(),
             "history_historicalevent_changelist", "?status__exact=draft")

@@ -10,7 +10,26 @@
   <p class="notice"><strong>Test mode.</strong> Payments are simulated; no real money moves. Connect a real payment provider before going live.</p>
 {% endif %}
 
-{% if not has_funds %}
+{% if accounts %}
+  <section class="card" style="max-width:40rem;margin:0 auto 1.5rem">
+    <h2 style="margin-top:0">Give by bank transfer</h2>
+    {% for a in accounts %}
+      <div style="padding:.75rem 0;border-top:1px solid var(--line, rgba(128,128,128,.25))">
+        <strong>{{ a.title }}</strong>{% if a.country %} <span class="muted">· {{ a.country }}</span>{% endif %}<br>
+        {% if a.bank_name %}{{ a.bank_name }}<br>{% endif %}
+        {% if a.account_name %}Account name: {{ a.account_name }}<br>{% endif %}
+        {% if a.account_number %}Account number: <strong>{{ a.account_number }}</strong> ({{ a.currency }})<br>{% endif %}
+        {% if a.instructions %}<span class="muted">{{ a.instructions }}</span>{% endif %}
+      </div>
+    {% endfor %}
+  </section>
+{% elif not online %}
+  <div class="empty" style="max-width:40rem;margin:0 auto">The church's giving accounts will be published here soon. Thank you for your heart to give.
+    {% if user.is_staff %}<br><a href="{% url 'admin:giving_givingaccount_add' %}">Add an account in the admin</a>.{% endif %}</div>
+{% endif %}
+
+{% if not online %}
+{% elif not has_funds %}
   <div class="empty">Giving isn't set up yet. {% if user.is_staff %}Add a fund in the <a href="{% url 'admin:giving_fund_add' %}">admin</a>.{% endif %}</div>
 {% else %}
   <form method="post" class="form-card">

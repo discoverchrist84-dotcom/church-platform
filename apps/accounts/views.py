@@ -23,7 +23,10 @@ def dashboard(request):
     user = request.user
     from apps.bookstore.services import cart_count
 
+    from apps.news.models import Bulletin
+
     return render(request, "accounts/dashboard.html", {
+        "bulletins": Bulletin.visible_to(user)[:3],
         "memberships": user.memberships.select_related("branch").order_by("-is_primary", "branch__name"),
         "orders": user.book_orders.order_by("-created_at")[:3],
         "order_count": user.book_orders.count(),

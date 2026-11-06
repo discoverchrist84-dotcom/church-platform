@@ -12,6 +12,7 @@
 <nav class="tabs structure-tabs" aria-label="News type">
   <a href="{% url 'news:list' %}"{% if not scope %} aria-current="page"{% endif %}>All news</a>
   {% for v, l in scopes %}<a href="?scope={{ v }}"{% if scope == v %} aria-current="page"{% endif %}>{{ l }}</a>{% endfor %}
+  <a href="{% url 'news:bulletins' %}">HQ announcements</a>
 </nav>
 
 <form class="toolbar" method="get" role="search" data-autosubmit>

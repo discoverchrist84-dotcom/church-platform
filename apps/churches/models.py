@@ -206,12 +206,13 @@ class BranchLeader(TimeStampedModel):
     phone = models.CharField(max_length=32, blank=True)
     email = models.EmailField(blank=True)
     show_contact = models.BooleanField(default=False, help_text="Show phone/email publicly. Off by default.")
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="leader_roles",
-        help_text="Optional: link their account. A linked superintendent/pastor can then manage this unit and everything below it.",
+    posted_on = models.DateField(
+        "posted here on", null=True, blank=True,
+        help_text="The date this minister was posted to this unit. Ministers are transferred after 4 years.",
     )
-    term_start = models.PositiveSmallIntegerField("serving since (year)", null=True, blank=True)
-    is_current = models.BooleanField(default=True)
+    ended_on = models.DateField("left on", null=True, blank=True, help_text="Filled in when the posting ends (transfer or retirement).")
+    term_start = models.PositiveSmallIntegerField("serving since (year)", null=True, blank=True, editable=False)
+    is_current = models.BooleanField(default=True, help_text="Untick when this minister is transferred; the history is kept.")
     order = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
@@ -254,16 +255,50 @@ class BranchLeader(TimeStampedModel):
                     {"is_current": "This unit already has a serving superintendent. Untick 'current' on the previous one first."}
                 )
 
+    # --- postings: ministers are moved after a fixed number of years (settings.MINISTER_POSTING_YEARS) ---
+    @property
+    def transfer_due_on(self):
+        if not self.posted_on or not self.is_current:
+            return None
+        from django.conf import settings as dj
+
+        years = getattr(dj, "MINISTER_POSTING_YEARS", 4)
+        try:
+            return self.posted_on.replace(year=self.posted_on.year + years)
+        except ValueError:  # 29 February
+            return self.posted_on.replace(year=self.posted_on.year + years, day=28)
+
+    @property
+    def posting_status(self):
+        """'' (no date), 'serving', 'due soon' (within 6 months) or 'overdue'."""
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        due = self.transfer_due_on
+        if not due:
+            return ""
+        today = timezone.localdate()
+        if due < today:
+            return "overdue"
+        return "due soon" if due <= today + timedelta(days=183) else "serving"
+
+    @property
+    def tenure(self):
+        if self.posted_on:
+            end = self.ended_on or self.transfer_due_on
+            label = f"{self.posted_on:%b %Y}"
+            return f"{label} – {end:%b %Y}" if self.ended_on else f"since {label}"
+        return f"since {self.term_start}" if self.term_start else ""
+
     def save(self, *args, **kwargs):
+        if self.posted_on:
+            self.term_start = self.posted_on.year
+        if not self.is_current and not self.ended_on:
+            from django.utils import timezone
+
+            self.ended_on = timezone.localdate()
         super().save(*args, **kwargs)
-        # A linked superintendent / pastor becomes admin of their unit (and so of everything below it).
-        if self.user_id and self.is_current and self.role in (self.Role.SUPERINTENDENT, self.Role.PASTOR):
-            m, created = Membership.objects.get_or_create(
-                user_id=self.user_id, branch=self.branch, defaults={"role": Membership.Role.ADMIN}
-            )
-            if not created and m.role != Membership.Role.ADMIN:
-                m.role = Membership.Role.ADMIN
-                m.save(update_fields=["role", "updated_at"])
 
 
 PARENT_LEVEL = {

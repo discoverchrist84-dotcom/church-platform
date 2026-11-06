@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Announcements · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <span class="kicker">From the National Headquarters</span>
+  <h1>Announcements</h1>
+  <p class="lede">Official notices for the whole church{% if user.is_authenticated %} and for your own area, district or station{% endif %}.
+    {% if not user.is_authenticated %}<a href="{% url 'accounts:login' %}">Sign in</a> to also see notices sent to your own unit.{% endif %}</p>
+</div>
+<nav class="tabs structure-tabs" aria-label="News type">
+  <a href="{% url 'news:list' %}">All news</a><a href="{% url 'news:bulletins' %}" aria-current="page">HQ announcements</a>
+</nav>
+{% for b in page.object_list %}
+  <article class="card" style="margin-bottom:1rem">
+    <p class="muted" style="margin:0">{% if b.is_urgent %}<span class="pill gold">URGENT</span> {% endif %}{{ b.published_at|date:"j F Y" }}
+      · {% if b.audience == "all" %}To everyone{% else %}To selected units{% endif %}</p>
+    <h2 style="margin:.3rem 0"><a href="{{ b.get_absolute_url }}">{{ b.title }}</a></h2>
+    <p style="margin:0">{{ b.excerpt }}</p>
+  </article>
+{% empty %}<div class="empty">No announcements yet.</div>{% endfor %}
+{% include "components/pager.html" with prev_label="← Newer" next_label="Older →" %}
+{% endblock %}
