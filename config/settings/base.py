@@ -13,9 +13,28 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
 # --- Database -------------------------------------------------------------
 # Postgres in docker/prod (DATABASE_URL), SQLite fallback for a quick start.
-DATABASES = {
-    "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
-}
+from urllib.parse import quote as _q  # noqa: E402
+
+from django.core.exceptions import ImproperlyConfigured  # noqa: E402
+
+_db_url = env("DATABASE_URL", default="").strip()
+if not _db_url and env("PGHOST", default=""):  # Railway also provides the separate PG* variables
+    _db_url = "postgres://{u}:{p}@{h}:{port}/{n}".format(
+        u=_q(env("PGUSER", default="postgres")), p=_q(env("PGPASSWORD", default="")), h=env("PGHOST"),
+        port=env("PGPORT", default="5432"), n=env("PGDATABASE", default="railway"))
+if not _db_url:
+    if env("RAILWAY_ENVIRONMENT", default="") or env("RENDER", default=""):
+        raise ImproperlyConfigured(
+            "DATABASE_URL is empty. In Railway open your site service > Variables > New Variable > "
+            "'Add Reference', choose Postgres and DATABASE_URL (it must look like ${{Postgres.DATABASE_URL}}, "
+            "and the database service must be in the same project). Then redeploy.")
+    _db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+elif "://" not in _db_url:
+    raise ImproperlyConfigured(
+        "DATABASE_URL is not a database address (it should start with postgresql://). If you typed "
+        "${{Postgres.DATABASE_URL}} make sure the Postgres service is named exactly 'Postgres'; "
+        "otherwise paste the connection URL from the database's Variables tab.")
+DATABASES = {"default": env.db_url_config(_db_url)}
 USING_POSTGRES = "postgresql" in DATABASES["default"]["ENGINE"]
 
 # --- Apps -----------------------------------------------------------------

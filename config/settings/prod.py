@@ -28,6 +28,8 @@ for _d in _domains:
 if env.bool("TRUST_RAILWAY_DOMAINS", default=bool(_domains)):
     ALLOWED_HOSTS.append(".up.railway.app")
     CSRF_TRUSTED_ORIGINS.append("https://*.up.railway.app")
+if env("RAILWAY_ENVIRONMENT", default="") or _domains:
+    ALLOWED_HOSTS.append("healthcheck.railway.app")  # Railway's deploy health check uses this host name
 if env("RENDER_EXTERNAL_HOSTNAME", default=""):
     ALLOWED_HOSTS.append(".onrender.com")
     CSRF_TRUSTED_ORIGINS.append("https://*.onrender.com")
