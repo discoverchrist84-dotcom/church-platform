@@ -218,3 +218,6 @@ python manage.py migrate
 ```
 - **Navbar → News** (`/news/`): stories from **inside the church** and from **outside** (other churches, community, nation, world). Filter by type, topic and area/district; search; RSS feed at `/news/feed/`; latest three on the home page.
 - **Admin → News:** write a story, add a picture and (for outside news) the source and link; pin it; save as a draft; or set a future "publish on" time to schedule it. Content editors can add and edit news.
+
+## Search engines (v26)
+`/sitemap.xml` lists every unit, story, book and announcement; `/robots.txt` keeps private pages out. See the guide to Google Search Console in the project notes: add the domain, verify with the DNS TXT record, submit `sitemap.xml`.

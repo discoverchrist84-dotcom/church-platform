@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}{{ item.title }} · {{ SITE_BRAND }}{% endblock %}
 {% block description %}{{ item.excerpt }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ item.title }}{% endblock %}
+{% block og_description %}{{ item.excerpt }}{% endblock %}
+{% block og_image %}{% if item.image|file_url %}{{ request.scheme }}://{{ request.get_host }}{{ item.image|file_url }}{% else %}{{ OG_IMAGE_URL }}{% endif %}{% endblock %}
 {% block content %}
 <p class="crumbs"><a href="{% url 'news:list' %}">News</a> › {{ item.get_scope_display }}</p>
 <article class="reader reader--news">

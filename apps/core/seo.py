@@ -102,7 +102,7 @@ SITEMAPS = {"pages": StaticPages, "units": Branches, "news": NewsStories, "annou
 def robots_txt(request):
     lines = ["User-agent: *"]
     lines += [f"Disallow: {p}" for p in PRIVATE_PREFIXES if not p.startswith("/media")]
-    lines += ["Allow: /", "", f"Sitemap: {request.build_absolute_uri(reverse('sitemap'))}", ""]
+    lines += ["Allow: /", "", f"Sitemap: {request.build_absolute_uri(reverse('core:sitemap'))}", ""]
     return HttpResponse("\n".join(lines), content_type="text/plain")
 
 

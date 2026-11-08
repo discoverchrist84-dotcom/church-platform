@@ -1,5 +1,6 @@
 from django.conf import settings
 
+from .seo import seo_context
 from .site_info import site_info
 
 
@@ -8,8 +9,10 @@ def site(request):
     user = getattr(request, "user", None)
     if user is not None and user.is_authenticated:
         unread = user.notifications.filter(is_read=False).count()
+    info = site_info()
     return {
-        **site_info(),  # name, logo, banner, contact: editable in the admin under "Website settings"
+        **info,
+        **(seo_context(request, info) if hasattr(request, "get_host") else {}),  # name, logo, banner, contact: editable in the admin under "Website settings"
         "SITE_LOGO": settings.SITE_LOGO,  # kept for older templates
         "THEME_COLOR": settings.THEME_COLOR,
         "DEFAULT_CURRENCY": settings.DEFAULT_CURRENCY,

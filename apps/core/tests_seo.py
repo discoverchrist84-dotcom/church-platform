@@ -10,7 +10,7 @@ class SeoTests(TestCase):
         r = self.client.get("/robots.txt")
         self.assertContains(r, "Disallow: /admin/")
         self.assertContains(r, "sitemap.xml")
-        s = self.client.get(reverse("sitemap"))
+        s = self.client.get(reverse("core:sitemap"))
         self.assertEqual(s.status_code, 200)
         self.assertContains(s, "hill-station")
 
