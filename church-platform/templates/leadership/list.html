@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Leadership · {{ SITE_BRAND }}{% endblock %}
+{% block description %}Meet the General Council and leaders of {{ SITE_BRAND }}.{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Leadership</h1>
+  <p class="lede">The General Council and the leaders who serve the church. Select anyone to read more.</p>
+</div>
+
+{% for c in general %}
+<section class="council reveal">
+  <div class="row between">
+    <h2 style="margin:0">{{ c.name }}</h2>
+    <a class="btn small ghost" href="{{ c.get_absolute_url }}">View council</a>
+  </div>
+  {% if c.cover|file_url %}<a href="{{ c.get_absolute_url }}"><img class="council__cover" src="{{ c.cover|file_url }}" alt="{{ c.name }}" loading="lazy"></a>{% endif %}
+  {% if c.description %}<p class="muted">{{ c.description|truncatewords:40 }}</p>{% endif %}
+  <div class="people stagger">
+    {% for m in c.members.all %}{% if m.is_current %}{% include "leadership/_person.html" with m=m %}{% endif %}{% endfor %}
+  </div>
+</section>
+{% empty %}
+  <div class="empty">The General Council has not been added yet.</div>
+{% endfor %}
+
+{% if others %}
+<h2>Other councils</h2>
+<div class="grid">
+  {% for c in others %}
+    <a class="card" href="{{ c.get_absolute_url }}">{% if c.cover|file_url %}<img class="council__cover" style="max-height:9rem" src="{{ c.cover|file_url }}" alt="" loading="lazy">{% endif %}<h3>{{ c.name }}</h3>
+      <p><span class="pill">{{ c.branch.name }}</span></p>
+      <p>{{ c.members.all|length }} member{{ c.members.all|length|pluralize }}</p></a>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

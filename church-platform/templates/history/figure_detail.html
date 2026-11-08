@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ figure.name }} · {{ SITE_BRAND }}{% endblock %}
+
+{% block content %}
+<article class="article">
+  <p class="muted"><a href="{% url 'history:timeline' %}">History</a> › People</p>
+  <h1>{{ figure.name }}</h1>
+  <p class="lede">{{ figure.title }}{% if figure.lifespan %} · <span class="when">{{ figure.lifespan }}</span>{% endif %}</p>
+  {% if figure.portrait|file_url %}<img class="hero-img" src="{{ figure.portrait|file_url }}" alt="{{ figure.name }}">{% endif %}
+  {% for p in paragraphs %}<p>{{ p }}</p>{% endfor %}
+
+  {% if events %}
+    <h2>Related events</h2>
+    <ul class="list">{% for e in events %}<li><a href="{{ e.get_absolute_url }}">{{ e.title }}</a> <span class="muted">· {{ e.when }}</span></li>{% endfor %}</ul>
+  {% endif %}
+</article>
+{% endblock %}

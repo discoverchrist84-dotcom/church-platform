@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{% if entry %}{{ entry.title }}{% else %}Daily devotional{% endif %} · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="page-head"><span class="kicker">Daily devotional</span><h1>{% if entry.book %}{{ entry.book.title }}{% else %}Today’s word{% endif %}</h1></div>
+{% if entry %}
+<article class="reader">
+  <p class="kicker">{{ entry.date|date:"l, j F Y" }}</p>
+  <h2 style="margin-top:0">{{ entry.title }}</h2>
+  {% if entry.scripture %}<p class="scripture">{{ entry.scripture }}</p>{% endif %}
+  {% for p in paragraphs %}<p>{{ p }}</p>{% endfor %}
+  {% if entry.prayer %}<div class="prayer"><strong>Prayer</strong><p>{{ entry.prayer }}</p></div>{% endif %}
+</article>
+<nav class="reader__nav">
+  {% if prev %}<a class="btn ghost" href="{{ prev.get_absolute_url }}">← {{ prev.date|date:"j M" }}</a>{% else %}<span></span>{% endif %}
+  <a class="btn ghost" href="{% url 'bookstore:devotional_archive' %}">All readings</a>
+  {% if next %}<a class="btn ghost" href="{{ next.get_absolute_url }}">{{ next.date|date:"j M" }} →</a>{% else %}<span></span>{% endif %}
+</nav>
+{% if entry.book %}<p style="text-align:center"><a href="{{ entry.book.get_absolute_url }}">Get the book: {{ entry.book.title }}</a></p>{% endif %}
+{% else %}
+<div class="empty">No devotional readings have been added yet.{% if user.is_staff %} <a href="{% url 'admin:bookstore_devotionalentry_add' %}">Add one</a>.{% endif %}</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Search · {{ SITE_BRAND }}{% endblock %}
+
+{% block content %}
+<h1>Search the history</h1>
+<form class="search" action="{% url 'history:search' %}" method="get" role="search">
+  <input id="q" type="search" name="q" value="{{ q }}" placeholder="e.g. Nicaea, Reformation, creed" aria-label="Search history" autofocus>
+  <button class="btn" type="submit">Search</button>
+</form>
+
+<div id="live-results" data-api="/api/history/search" aria-live="polite">
+  {% if q %}
+    {% for e in results %}
+      <article class="result">
+        <a href="{{ e.get_absolute_url }}"><strong>{{ e.title }}</strong></a>
+        <span class="muted">· {{ e.when }}</span>
+        <p>{{ e.summary }}</p>
+      </article>
+    {% empty %}
+      <p class="muted">No results for “{{ q }}”.</p>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/search.js' %}" defer></script>{% endblock %}

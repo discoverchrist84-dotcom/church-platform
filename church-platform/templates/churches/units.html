@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · {{ SITE_BRAND }}{% endblock %}
+{% block description %}{{ lede }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <span class="kicker">Our structure</span>
+  <h1>{{ title }}</h1>
+  <p class="lede">{{ lede }}</p>
+</div>
+{% include "churches/_tabs.html" with tab=kind %}
+
+<form class="toolbar" method="get" role="search" data-autosubmit>
+  <div class="toolbar__search"><input type="search" name="q" value="{{ q }}" placeholder="Search {{ title|lower }}, a place or a superintendent" aria-label="Search"></div>
+  {% if kind != "areas" %}
+  <label class="toolbar__sel"><span>Area</span>
+    <select name="area"><option value="">All areas</option>
+      {% for a in areas %}<option value="{{ a.slug }}"{% if a.slug == area %} selected{% endif %}>{{ a.name }}</option>{% endfor %}</select></label>
+  {% endif %}
+  {% if kind == "stations" %}
+  <label class="toolbar__sel"><span>District</span>
+    <select name="district"><option value="">All districts</option>
+      {% for d in districts %}<option value="{{ d.slug }}"{% if d.slug == district %} selected{% endif %}>{{ d.name }}</option>{% endfor %}</select></label>
+  {% endif %}
+  <button class="btn" type="submit">Search</button>
+</form>
+
+<p class="resultbar"><strong>{{ count }}</strong> of {% if kind == "areas" %}{{ totals.areas }}{% elif kind == "districts" %}{{ totals.districts }}{% else %}{{ totals.stations }}{% endif %} shown · {{ hint }}{% if q or area or district %} · <a href="{{ request.path }}">Clear filters</a>{% endif %}</p>
+
+{% if page.object_list %}
+<div class="grid units stagger">
+  {% for b in page.object_list %}
+  <a class="card unit" href="{{ b.get_absolute_url }}">
+    <span class="unit__top">
+      <span class="pill {% if b.is_national_headquarters %}gold{% endif %}">{% if b.is_national_headquarters %}National Headquarters{% else %}{{ b.get_level_display }}{% endif %}</span>
+      {% if kind == "stations" and b.district_unit %}<span class="muted">{{ b.district_unit.name }}</span>{% elif kind == "districts" and b.area_unit %}<span class="muted">{{ b.area_unit.name }}</span>{% endif %}
+    </span>
+    <h3>{{ b.name }}</h3>
+    {% if kind == "areas" %}<p class="muted">{{ b.n_districts }} district{{ b.n_districts|pluralize }} · {{ b.n_stations }} station{{ b.n_stations|pluralize }}</p>
+    {% elif kind == "districts" %}<p class="muted">{{ b.n_stations }} station{{ b.n_stations|pluralize }}</p>
+    {% else %}<p class="muted">{{ b.address|default:b.city|default:"Address to be added" }}</p>{% endif %}
+    {% with l=b.superintendent %}{% if l %}
+      <span class="who"><span class="who__av">{% if l.photo|file_url %}<img src="{{ l.photo|file_url }}" alt="" loading="lazy" width="28" height="28">{% else %}{{ l.initials }}{% endif %}</span>{{ l.display_title }}: {{ l.name }}</span>
+    {% else %}<span class="muted">{{ b.head_title }}: not yet listed</span>{% endif %}{% endwith %}
+  </a>
+  {% endfor %}
+</div>
+{% include "components/pager.html" with prev_label="← Previous" next_label="Next →" %}
+{% else %}
+  <div class="empty">Nothing matches. <a href="{{ request.path }}">Clear filters</a>.{% if user.is_staff %} <a href="{% url 'admin:churches_branch_add' %}">Add one in the admin</a>.{% endif %}</div>
+{% endif %}
+{% endblock %}

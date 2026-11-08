@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} · {{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block fullwidth %}
+{% include "churches/_hero.html" %}
+<div class="wrap narrow page-body">
+  <p class="crumbs" style="margin-top:0"><a href="{% url 'community:board' slug=branch.slug %}">← Back to the board</a></p>
+  <article class="post{% if post.is_hidden %} hidden{% endif %}">
+    <h2 style="margin-top:0">{{ post.title }}</h2>
+    <p class="byline">{{ post.author.get_full_name|default:post.author.username }} · {{ post.created_at|date:"M j, Y g:i A" }}
+      {% if post.is_hidden %}<span class="pill warn">Hidden from members</span>{% endif %}</p>
+    {{ post.body|linebreaks }}
+    <div class="row">
+      {% if can_manage %}{% include "community/_hide.html" with kind="post" pk=post.pk hidden=post.is_hidden %}
+      {% elif post.author_id != user.id %}{% include "community/_report.html" with kind="post" pk=post.pk %}{% endif %}
+    </div>
+  </article>
+
+  <h3 style="margin-top:2rem">Comments ({{ comments|length }})</h3>
+  <div class="stack">
+    {% for c in comments %}
+      <div class="comment{% if c.is_hidden %} hidden{% endif %}">
+        <p class="byline">{{ c.author.get_full_name|default:c.author.username }} · {{ c.created_at|date:"M j, g:i A" }}
+          {% if c.is_hidden %}<span class="pill warn">Hidden</span>{% endif %}</p>
+        {{ c.body|linebreaks }}
+        <div class="row">
+          {% if can_manage %}{% include "community/_hide.html" with kind="comment" pk=c.pk hidden=c.is_hidden %}
+          {% elif c.author_id != user.id %}{% include "community/_report.html" with kind="comment" pk=c.pk %}{% endif %}
+        </div>
+      </div>
+    {% empty %}<p class="muted">No comments yet.</p>{% endfor %}
+  </div>
+
+  <form method="post" class="card" style="margin-top:1.5rem">
+    {% csrf_token %}
+    {% include "components/form.html" %}
+    <button class="btn" type="submit">Post comment</button>
+  </form>
+</div>
+{% endblock %}

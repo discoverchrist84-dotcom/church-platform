@@ -61,11 +61,15 @@ def _home_devotional():
 
 
 def home(request):
+    from .seo import church_jsonld
+    from .site_info import site_info
+
     council, council_members = _spotlight()
     return render(
         request,
         "core/home.html",
         {
+            "jsonld": church_jsonld(request, site_info()),
             "stats": _home_stats(),
             "spot_council": council,
             "spot_members": council_members,

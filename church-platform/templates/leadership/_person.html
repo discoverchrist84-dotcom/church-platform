@@ -1,0 +1,7 @@
+<a class="person" href="{{ m.get_absolute_url }}">
+  <span class="person__photo">
+    {% if m.photo|file_url %}<img src="{{ m.photo|file_url }}" alt="{{ m.name }}" loading="lazy" width="160" height="160">{% else %}<span class="person__initials" aria-hidden="true">{{ m.initials }}</span>{% endif %}
+  </span>
+  <span class="person__name">{{ m.name }}</span>
+  {% if m.title %}<span class="person__title">{{ m.title }}</span>{% endif %}
+</a>

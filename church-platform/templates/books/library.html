@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}My books · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="page-head"><h1>My books</h1></div>
+<h2>My e-books</h2>
+{% if owned %}<div class="grid books">{% for b in owned %}{% include "books/_card.html" with b=b %}{% endfor %}</div>{% else %}<div class="empty">You have not bought an e-book yet. <a href="{% url 'bookstore:list' %}">Browse the books</a>.</div>{% endif %}
+<h2>My orders</h2>
+<ul class="list">{% for o in orders %}<li><a href="{{ o.get_absolute_url }}">{{ o.number }}</a> · {{ o.created_at|date:"j M Y" }} · {{ o.total }} {{ o.currency }} · <span class="pill">{{ o.get_status_display }}</span></li>{% empty %}<li class="muted">No orders yet.</li>{% endfor %}</ul>
+{% endblock %}

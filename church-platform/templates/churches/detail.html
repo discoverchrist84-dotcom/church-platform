@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}{{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block description %}{{ branch.description|truncatechars:160|default:SITE_DESCRIPTION }}{% endblock %}
+
+{% block fullwidth %}
+{% include "churches/_hero.html" %}
+<div class="wrap page-body">
+  <div class="split">
+    <div class="stack">
+      {% if branch.description %}<p class="lede" style="margin:0">{{ branch.description }}</p>{% endif %}
+      {% if branch.service_times %}<p style="margin:0"><strong>Service times:</strong> {{ branch.service_times }}</p>{% endif %}
+
+      {% if leaders %}
+      <section>
+        <h2 style="margin:0 0 1rem">Leadership</h2>
+        <div class="people people--lead stagger">
+          {% for l in leaders %}
+            <div class="person person--static">
+              <span class="person__photo">{% if l.photo|file_url %}<img src="{{ l.photo|file_url }}" alt="{{ l.name }}" loading="lazy" width="160" height="160">{% else %}<span class="person__initials" aria-hidden="true">{{ l.initials }}</span>{% endif %}</span>
+              <span class="person__name">{{ l.name }}</span>
+              <span class="person__title">{{ l.display_title }}</span>
+              {% if l.show_contact and l.phone %}<a class="person__link" href="tel:{{ l.phone }}">{{ l.phone }}</a>{% endif %}
+              {% if l.show_contact and l.email %}<a class="person__link" href="mailto:{{ l.email }}">{{ l.email }}</a>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% elif branch.head_title %}
+      <p class="muted" style="margin:0">{{ branch.head_title }}: not yet listed.</p>
+      {% endif %}
+
+      {% if counts %}<p class="statline">{% for label, n in counts.items %}<span><b>{{ n }}</b> {{ label }}</span>{% endfor %}</p>{% endif %}
+
+      {% if children %}
+      <section>
+        <h2 style="margin:0 0 1rem">{{ branch.child_label_plural }} under {{ branch.name }}</h2>
+        <div class="grid stagger">
+          {% for c in children %}
+            <a class="card unit" href="{{ c.get_absolute_url }}">
+              <span class="unit__top"><span class="pill{% if c.is_national_headquarters %} gold{% endif %}">{% if c.is_national_headquarters %}National Headquarters{% else %}{{ c.get_level_display }}{% endif %}</span></span>
+              <h3>{{ c.name }}</h3>
+              {% if c.level != "local" %}<p class="muted">{{ c.n_children }} {% if c.level == "region" %}district{% else %}station{% endif %}{{ c.n_children|pluralize }}</p>{% elif c.address or c.city %}<p class="muted">{{ c.address|default:c.city }}</p>{% endif %}
+              {% with l=c.superintendent %}{% if l %}<span class="who"><span class="who__av">{% if l.photo|file_url %}<img src="{{ l.photo|file_url }}" alt="" loading="lazy" width="28" height="28">{% else %}{{ l.initials }}{% endif %}</span>{{ l.name }}</span>{% endif %}{% endwith %}
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% for council in councils %}
+      <section>
+        <div class="row between"><h2 style="margin:0">{{ council.name }}</h2>
+          <a class="btn small ghost" href="{{ council.get_absolute_url }}">Full details</a></div>
+        <div class="people stagger" style="margin-top:1rem">
+          {% for m in council.members.all|slice:":6" %}{% include "leadership/_person.html" with m=m %}{% endfor %}
+        </div>
+      </section>
+      {% endfor %}
+
+      <section>
+        <div class="row between"><h2 style="margin:0">Announcements</h2>
+          {% if can_manage %}<a class="btn small" href="{% url 'community:announcement_create' slug=branch.slug %}">New announcement</a>{% endif %}</div>
+        <div class="stack" style="margin-top:1rem">
+          {% for a in announcements %}
+            <article class="announce">
+              <h3>{% if a.is_pinned %}<span class="pill gold">Pinned</span> {% endif %}{{ a.title }}</h3>
+              <p class="byline">{{ a.created_at|date:"M j, Y" }}</p>
+              {{ a.body|linebreaks }}
+            </article>
+          {% empty %}<div class="empty">No announcements yet.</div>{% endfor %}
+        </div>
+      </section>
+
+      <section>
+        <div class="row between"><h2 style="margin:0">Coming up</h2>
+          <a class="btn small ghost" href="{% url 'community:events' slug=branch.slug %}">All events</a></div>
+        <div class="stack" style="margin-top:1rem">
+          {% for e in events %}
+            <article class="event">
+              <div class="body">
+                <span class="date-tile"><small>{{ e.starts_at|date:"M" }}</small><b>{{ e.starts_at|date:"j" }}</b></span>
+                <div><h3>{{ e.title }}</h3><p class="muted">{{ e.starts_at|date:"D g:i A" }}{% if e.location %} · {{ e.location }}{% endif %}</p></div>
+              </div>
+            </article>
+          {% empty %}<div class="empty">No upcoming events.</div>{% endfor %}
+        </div>
+      </section>
+
+      <section>
+        <div class="row between"><h2 style="margin:0">Latest sermons</h2>
+          <a class="btn small ghost" href="{% url 'media_library:sermons' slug=branch.slug %}">All sermons</a></div>
+        <div class="stack" style="margin-top:1rem">
+          {% for s in sermons %}
+            <article class="sermon"><h3>{{ s.title }}</h3>
+              <p class="byline">{% if s.speaker %}{{ s.speaker }} · {% endif %}{{ s.preached_on|date:"M j, Y" }}{% if s.scripture %} · {{ s.scripture }}{% endif %}</p></article>
+          {% empty %}<div class="empty">No sermons yet.</div>{% endfor %}
+        </div>
+      </section>
+    </div>
+
+    <aside class="stack">
+      <div class="card">
+        {% if user.is_authenticated %}
+          {% if is_member %}
+            <p><span class="pill ok">Member</span> You belong to this branch.</p>
+            <form method="post" action="{% url 'churches:leave' slug=branch.slug %}">{% csrf_token %}
+              <button class="btn small danger" type="submit">Leave branch</button></form>
+          {% else %}
+            <h3>Join this branch</h3>
+            <p>Members can use the board, groups and prayer wall.</p>
+            <form method="post" action="{% url 'churches:join' slug=branch.slug %}">{% csrf_token %}
+              <button class="btn block" type="submit">Join this branch</button></form>
+          {% endif %}
+        {% else %}
+          <h3>Join this branch</h3>
+          <p>Create a free account or sign in to join.</p>
+          <p><a class="btn block" href="{% url 'accounts:login' %}?next={{ request.path }}">Sign in to join</a></p>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <h3>Contact</h3>
+        {% if branch.address or branch.city %}<p>{{ branch.address }}{% if branch.address and branch.city %}, {% endif %}{{ branch.city }}{% if branch.region %}, {{ branch.region }}{% endif %}{% if branch.country %}, {{ branch.country }}{% endif %}</p>{% endif %}
+        {% if branch.phone %}<p><a href="tel:{{ branch.phone }}">{{ branch.phone }}</a></p>{% endif %}
+        {% if branch.email %}<p><a href="mailto:{{ branch.email }}">{{ branch.email }}</a></p>{% endif %}
+        {% if branch.website %}<p><a href="{{ branch.website }}" rel="noopener" target="_blank">Website</a></p>{% endif %}
+        {% if not branch.address and not branch.city and not branch.phone and not branch.email and not branch.website %}<p class="muted">No contact details yet.</p>{% endif %}
+      </div>
+
+      {% if can_manage %}
+        <div class="card">
+          <h3>Leader tools</h3>
+          <p><a href="{% url 'community:announcement_create' slug=branch.slug %}">Post an announcement</a></p>
+          <p><a href="{% url 'community:event_create' slug=branch.slug %}">Create an event</a></p>
+          <p><a href="{% url 'media_library:sermon_create' slug=branch.slug %}">Add a sermon</a></p>
+          <p><a href="{% url 'community:moderation' slug=branch.slug %}">Review reports</a></p>
+        </div>
+      {% endif %}
+
+      {% if children %}
+        <div class="card"><h3>Branches under {{ branch.name }}</h3>
+          <ul class="list">{% for c in children %}<li><a href="{{ c.get_absolute_url }}">{{ c.name }}</a></li>{% endfor %}</ul></div>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

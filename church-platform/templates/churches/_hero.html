@@ -1,0 +1,20 @@
+<section class="branch-hero"{% if branch.cover|file_url %} style="--cover:url('{{ branch.cover|file_url }}')"{% endif %}>
+  <div class="wrap">
+    <p class="crumbs"><a href="{% url 'churches:list' %}">Structure</a>{% for a in branch.breadcrumbs %} › <a href="{{ a.get_absolute_url }}">{{ a.name }}</a>{% endfor %}</p>
+    <div class="branch-hero__title">
+      {% if branch.logo|file_url %}<img class="branch-hero__logo" src="{{ branch.logo|file_url }}" alt="" width="72" height="72">{% endif %}
+      <h1>{{ branch.name }}{% if branch.is_national_headquarters %} <span class="pill gold">National Headquarters</span>{% endif %}</h1>
+    </div>
+    <p class="meta">{{ branch.get_level_display }}{% if branch.level_note and branch.level_note != branch.get_level_display %} ({{ branch.level_note|lower }}){% endif %}{% if branch.city %} · {{ branch.city }}{% endif %}{% if branch.country %}, {{ branch.country }}{% endif %}</p>
+    <nav class="tabs" aria-label="{{ branch.name }} sections">
+      <a href="{% url 'churches:detail' slug=branch.slug %}"{% if active == 'overview' %} aria-current="page"{% endif %}>Overview</a>
+      <a href="{% url 'community:events' slug=branch.slug %}"{% if active == 'events' %} aria-current="page"{% endif %}>Events</a>
+      <a href="{% url 'media_library:sermons' slug=branch.slug %}"{% if active == 'sermons' %} aria-current="page"{% endif %}>Sermons</a>
+      <a href="{% url 'community:board' slug=branch.slug %}"{% if active == 'board' %} aria-current="page"{% endif %}>Board</a>
+      <a href="{% url 'community:groups' slug=branch.slug %}"{% if active == 'groups' %} aria-current="page"{% endif %}>Groups</a>
+      <a href="{% url 'community:prayer' slug=branch.slug %}"{% if active == 'prayer' %} aria-current="page"{% endif %}>Prayer</a>
+      <a href="{% url 'giving:give' %}?branch={{ branch.slug }}">Give</a>
+      {% if can_manage %}<a href="{% url 'community:moderation' slug=branch.slug %}"{% if active == 'manage' %} aria-current="page"{% endif %}>Manage</a>{% endif %}
+    </nav>
+  </div>
+</section>

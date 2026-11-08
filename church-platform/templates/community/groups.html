@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Groups · {{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block fullwidth %}
+{% include "churches/_hero.html" %}
+<div class="wrap page-body">
+  <h2 style="margin-top:0">Groups &amp; ministries</h2>
+  <div class="grid">
+    {% for g in groups %}
+      <div class="card">
+        <h3>{{ g.name }}</h3>
+        <p class="muted">{{ g.n_members }} member{{ g.n_members|pluralize }}</p>
+        {% if g.description %}<p>{{ g.description|truncatewords:30 }}</p>{% endif %}
+        {% if g.joined %}
+          <form method="post" action="{% url 'community:group_leave' slug=branch.slug ministry_slug=g.slug %}">{% csrf_token %}
+            <button class="btn small danger" type="submit">Leave group</button></form>
+        {% else %}
+          <form method="post" action="{% url 'community:group_join' slug=branch.slug ministry_slug=g.slug %}">{% csrf_token %}
+            <button class="btn small" type="submit">Join group</button></form>
+        {% endif %}
+      </div>
+    {% empty %}
+      <div class="empty">No groups yet. Branch leaders can add them in the admin.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

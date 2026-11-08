@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ SITE_BRAND }} admin{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/admin.css' %}">{% endblock %}
+{% block extrahead %}{{ block.super }}<script src="{% static 'js/admin-upload.js' %}" defer></script>{% endblock %}
+{% block branding %}
+<div id="site-name" class="church-brand">
+  <img src="{{ SITE_LOGO_URL }}" alt="" width="34" height="34">
+  <a href="{% url 'admin:index' %}">{{ SITE_BRAND }} <small>administration</small></a>
+</div>
+{% endblock %}
+{% block nav-global %}<a class="viewsite" href="{% url 'core:home' %}">← Back to the website</a>{% endblock %}

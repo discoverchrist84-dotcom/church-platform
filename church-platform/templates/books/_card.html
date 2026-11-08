@@ -1,0 +1,9 @@
+<a class="card book" href="{{ b.get_absolute_url }}">
+  <span class="book__cover">{% if b.cover|file_url %}<img src="{{ b.cover|file_url }}" alt="Cover of {{ b.title }}" loading="lazy" width="200" height="300">{% else %}<span class="book__ph"><b>{{ b.title }}</b></span>{% endif %}</span>
+  <span class="book__meta">
+    {% if b.series %}<small class="muted">{{ b.series }}</small>{% endif %}
+    <h3>{{ b.title }}</h3>
+    {% if b.authors.all %}<p class="muted">{{ b.author_names }}</p>{% endif %}
+    <p class="book__price">{% if b.free_to_read %}<span class="pill ok">Free to read</span> {% endif %}{% if b.price_from is not None %}from <b>{{ b.price_from }}</b> {{ DEFAULT_CURRENCY|default:"" }}{% endif %}</p>
+  </span>
+</a>

@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{% block title %}{{ SITE_BRAND }} · {{ SITE_SUBBRAND }}{% endblock %}</title>
   <meta name="description" content="{% block description %}{{ SITE_DESCRIPTION }}{% endblock %}">
+  <link rel="canonical" href="{{ CANONICAL_URL }}">
+  <meta property="og:site_name" content="{{ SITE_BRAND }}">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{{ SITE_BRAND }} · {{ SITE_SUBBRAND }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
+  <meta property="og:url" content="{{ CANONICAL_URL }}">
+  <meta property="og:image" content="{% block og_image %}{{ OG_IMAGE_URL }}{% endblock %}">
+  <meta name="twitter:card" content="summary">
   <meta name="theme-color" content="{{ THEME_COLOR }}">
   <meta name="color-scheme" content="light dark">
 

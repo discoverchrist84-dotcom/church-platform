@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ b.title }} · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<article class="prose" style="max-width:46rem;margin:0 auto">
+  <p class="muted"><a href="{% url 'news:bulletins' %}">← All announcements</a></p>
+  {% if b.is_urgent %}<span class="pill gold">URGENT</span>{% endif %}
+  <h1>{{ b.title }}</h1>
+  <p class="muted">From the National Headquarters · {{ b.published_at|date:"j F Y" }}</p>
+  {{ b.body|linebreaks }}
+</article>
+{% endblock %}

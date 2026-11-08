@@ -1,0 +1,23 @@
+{# One unit in the structure tree. `node` is (branch, [child nodes]). #}
+{% with b=node.0 kids=node.1 %}
+<li class="node node--{{ b.level }}">
+  {% if kids %}
+  <details{% if b.level == "region" %} open{% endif %}>
+    <summary>
+      <span class="pill">{{ b.get_level_display }}</span>
+      <a class="node__name" href="{{ b.get_absolute_url }}">{{ b.name }}</a>
+      {% if b.superintendent %}<span class="node__lead"><span class="who__av">{% if b.superintendent.photo|file_url %}<img src="{{ b.superintendent.photo|file_url }}" alt="" width="28" height="28" loading="lazy">{% else %}{{ b.superintendent.initials }}{% endif %}</span>{{ b.superintendent.name }}</span>{% endif %}
+      <span class="muted node__meta">{{ kids|length }} {% if b.level == "region" %}district{{ kids|length|pluralize }}{% else %}station{{ kids|length|pluralize }}{% endif %}</span>
+    </summary>
+    <ul class="tree">{% for child in kids %}{% include "churches/_node.html" with node=child %}{% endfor %}</ul>
+  </details>
+  {% else %}
+  <div class="node__leaf">
+    <span class="pill{% if b.is_national_headquarters %} gold{% endif %}">{% if b.is_national_headquarters %}National HQ{% else %}{{ b.get_level_display }}{% endif %}</span>
+    <a class="node__name" href="{{ b.get_absolute_url }}">{{ b.name }}</a>
+    {% if b.superintendent %}<span class="node__lead"><span class="who__av">{% if b.superintendent.photo|file_url %}<img src="{{ b.superintendent.photo|file_url }}" alt="" width="28" height="28" loading="lazy">{% else %}{{ b.superintendent.initials }}{% endif %}</span>{{ b.superintendent.name }}</span>{% endif %}
+    {% if b.city %}<span class="muted node__meta">{{ b.city }}</span>{% endif %}
+  </div>
+  {% endif %}
+</li>
+{% endwith %}

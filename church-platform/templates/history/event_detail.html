@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }} · {{ SITE_BRAND }}{% endblock %}
+{% block description %}{{ event.summary|truncatechars:160 }}{% endblock %}
+
+{% block content %}
+<article class="article">
+  <p class="muted"><a href="{% url 'history:timeline' %}">History</a>{% if event.era %} › {{ event.era.name }}{% endif %}</p>
+  <h1>{{ event.title }}</h1>
+  <p class="lede"><span class="when">{{ event.when }}</span> — {{ event.summary }}</p>
+
+  {% if event.hero_image|file_url %}<img class="hero-img" src="{{ event.hero_image|file_url }}" alt="{{ event.title }}">{% endif %}
+
+  {% for p in paragraphs %}<p>{{ p }}</p>{% endfor %}
+
+  {% if figures %}
+    <h2>People</h2>
+    <ul class="list">{% for f in figures %}<li><a href="{{ f.get_absolute_url }}">{{ f.name }}</a> <span class="muted">{{ f.title }}</span></li>{% endfor %}</ul>
+  {% endif %}
+
+  {% if event.places.all %}
+    <h2>Places</h2>
+    <p>{% for p in event.places.all %}{{ p.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+  {% endif %}
+
+  <h2>Sources</h2>
+  {% if event.sources.all %}
+    <ul class="list">
+      {% for s in event.sources.all %}
+        <li>{% if s.url %}<a href="{{ s.url }}" rel="noopener" target="_blank">{{ s.title }}</a>{% else %}{{ s.title }}{% endif %}
+          {% if s.author %}— {{ s.author }}{% endif %} <span class="muted">({{ s.get_kind_display }})</span></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">No sources have been attached to this entry yet.</p>
+  {% endif %}
+</article>
+{% endblock %}

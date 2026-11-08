@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Your cart · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Your cart</h1></div>
+{% if lines %}
+<div class="tablewrap"><table class="dir cart">
+  <thead><tr><th>Book</th><th>Format</th><th>Price</th><th>Quantity</th><th>Total</th><th></th></tr></thead>
+  <tbody>
+  {% for l in lines %}
+    <tr>
+      <td data-label="Book"><a href="{{ l.book.get_absolute_url }}">{{ l.book.title }}</a>{% if l.problem %}<br><span class="pill warn">{{ l.problem }}</span>{% endif %}</td>
+      <td data-label="Format">{% if l.fmt == "print" %}Printed copy{% else %}E-book (PDF){% endif %}</td>
+      <td data-label="Price">{{ l.unit }} {{ currency }}</td>
+      <td data-label="Quantity">
+        <form method="post" action="{% url 'bookstore:cart_update' %}" class="row">{% csrf_token %}
+          <input type="hidden" name="key" value="{{ l.key }}">
+          {% if l.fmt == "print" %}<input type="number" name="quantity" value="{{ l.qty }}" min="1" max="20" style="width:5rem"><button class="btn small ghost" type="submit">Update</button>{% else %}1{% endif %}
+          <button class="btn small danger" name="remove" value="1" type="submit">Remove</button>
+        </form></td>
+      <td data-label="Total">{{ l.total }} {{ currency }}</td><td></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+<p class="cart__sum">Subtotal: <strong>{{ subtotal }} {{ currency }}</strong></p>
+<p class="row between"><a class="btn ghost" href="{% url 'bookstore:list' %}">Keep browsing</a>
+  {% if blocked %}<span class="muted">Remove or fix the marked items to continue.</span>{% else %}<a class="btn" href="{% url 'bookstore:checkout' %}">Checkout</a>{% endif %}</p>
+{% else %}
+<div class="empty">Your cart is empty. <a href="{% url 'bookstore:list' %}">Browse the books</a>.</div>
+{% endif %}
+{% endblock %}

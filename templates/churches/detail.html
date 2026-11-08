@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
 {% block description %}{{ branch.description|truncatechars:160|default:SITE_DESCRIPTION }}{% endblock %}
+{% block og_title %}{{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block og_description %}{{ branch.description|truncatechars:160|default:SITE_DESCRIPTION }}{% endblock %}
 
 {% block fullwidth %}
 {% include "churches/_hero.html" %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Manage · {{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block fullwidth %}
+{% include "churches/_hero.html" %}
+<div class="wrap narrow page-body">
+  <div class="row between">
+    <h2 style="margin:0">Reports</h2>
+    {% if show_all %}<a class="btn small ghost" href="?">Open only</a>{% else %}<a class="btn small ghost" href="?all=1">Show closed too</a>{% endif %}
+  </div>
+  <div class="stack" style="margin-top:1.25rem">
+    {% for r in reports %}
+      <article class="report">
+        <p class="byline"><span class="pill{% if not r.resolved %} warn{% endif %}">{% if r.resolved %}Closed{% else %}Open{% endif %}</span>
+          <span class="pill">{{ r.target_kind|title }}</span>
+          reported by {{ r.reporter.get_full_name|default:r.reporter.username }} · {{ r.created_at|date:"M j, g:i A" }}</p>
+        <p><strong>Reason:</strong> {{ r.reason }}</p>
+        {% if r.target %}
+          <blockquote class="muted" style="margin:.5rem 0">{{ r.target_text|truncatewords:40 }}</blockquote>
+          <p>
+            {% if r.post_id %}<a href="{% url 'community:post_detail' slug=branch.slug post_id=r.post_id %}">Open post</a>
+            {% elif r.comment_id %}<a href="{% url 'community:post_detail' slug=branch.slug post_id=r.comment.post_id %}">Open the post</a>
+            {% else %}<a href="{% url 'community:prayer' slug=branch.slug %}">Open prayer wall</a>{% endif %}
+            {% if r.target.is_hidden %}<span class="pill warn">Already hidden</span>{% endif %}
+          </p>
+        {% endif %}
+        {% if not r.resolved %}
+          <div class="row">
+            <form method="post" action="{% url 'community:resolve_report' slug=branch.slug report_id=r.pk action='hide' %}" class="inline">{% csrf_token %}
+              <button class="btn small danger" type="submit">Hide it &amp; close</button></form>
+            <form method="post" action="{% url 'community:resolve_report' slug=branch.slug report_id=r.pk action='dismiss' %}" class="inline">{% csrf_token %}
+              <button class="btn small ghost" type="submit">Dismiss</button></form>
+          </div>
+        {% endif %}
+      </article>
+    {% empty %}<div class="empty">No reports to review. 🎉</div>{% endfor %}
+  </div>
+</div>
+{% endblock %}

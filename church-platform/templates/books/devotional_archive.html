@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Devotional archive · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="page-head"><span class="kicker">Daily devotional</span><h1>All readings</h1></div>
+<ul class="list devo-list">
+  {% for e in page.object_list %}<li><a href="{{ e.get_absolute_url }}"><b>{{ e.date|date:"j M Y" }}</b> · {{ e.title }}</a>{% if e.scripture %} <span class="muted">{{ e.scripture }}</span>{% endif %}</li>
+  {% empty %}<li class="empty">Nothing here yet.</li>{% endfor %}
+</ul>
+{% include "components/pager.html" with prev_label="← Newer" next_label="Older →" %}
+{% endblock %}

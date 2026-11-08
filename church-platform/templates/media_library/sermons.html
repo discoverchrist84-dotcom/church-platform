@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Sermons · {{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block fullwidth %}
+{% include "churches/_hero.html" %}
+<div class="wrap page-body">
+  <div class="row between">
+    <h2 style="margin:0">Sermons</h2>
+    {% if can_manage %}<a class="btn small" href="{% url 'media_library:sermon_create' slug=branch.slug %}">Add a sermon</a>{% endif %}
+  </div>
+  <form class="search" method="get" role="search">
+    <input type="search" name="q" value="{{ q }}" placeholder="Search by title, speaker or scripture" aria-label="Search sermons">
+    <button class="btn" type="submit">Search</button>
+  </form>
+
+  <div class="stack">
+    {% for s in page %}
+      <article class="sermon">
+        <h3>{{ s.title }}</h3>
+        <p class="byline">{% if s.speaker %}{{ s.speaker }} · {% endif %}{{ s.preached_on|date:"F j, Y" }}{% if s.scripture %} · {{ s.scripture }}{% endif %}</p>
+        {% if s.description %}<p>{{ s.description }}</p>{% endif %}
+        {% if s.asset and s.asset.kind == "audio" %}
+          <audio controls preload="none" src="{{ s.asset.file.url }}"></audio>
+        {% elif s.asset and s.asset.kind == "video" %}
+          <video controls preload="metadata" playsinline src="{{ s.asset.file.url }}"></video>
+        {% elif s.asset %}
+          <p><a class="btn small ghost" href="{{ s.asset.file.url }}" target="_blank" rel="noopener">Open file</a></p>
+        {% endif %}
+        {% if s.embed %}
+          <div class="embed"><iframe src="{{ s.embed }}" title="{{ s.title }}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+        {% elif s.video_url %}
+          <p><a class="btn small ghost" href="{{ s.video_url }}" target="_blank" rel="noopener">Watch</a></p>
+        {% endif %}
+      </article>
+    {% empty %}
+      <div class="empty">{% if q %}No sermons match “{{ q }}”.{% else %}No sermons have been added yet.{% endif %}</div>
+    {% endfor %}
+  </div>
+  {% include "components/pager.html" %}
+</div>
+{% endblock %}

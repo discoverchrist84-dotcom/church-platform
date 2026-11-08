@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Board · {{ branch.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block fullwidth %}
+{% include "churches/_hero.html" %}
+<div class="wrap page-body">
+  <div class="row between">
+    <h2 style="margin:0">Community board</h2>
+    <a class="btn small" href="{% url 'community:post_create' slug=branch.slug %}">New post</a>
+  </div>
+  <div class="stack" style="margin-top:1.25rem">
+    {% for p in page %}
+      <article class="post{% if p.is_hidden %} hidden{% endif %}">
+        <h3><a href="{% url 'community:post_detail' slug=branch.slug post_id=p.pk %}">{{ p.title }}</a></h3>
+        <p class="byline">{{ p.author.get_full_name|default:p.author.username }} · {{ p.created_at|date:"M j, Y" }}
+          · <span class="pill">{{ p.n_comments }} comment{{ p.n_comments|pluralize }}</span>
+          {% if p.is_hidden %}<span class="pill warn">Hidden</span>{% endif %}</p>
+        <p>{{ p.body|truncatewords:35 }}</p>
+      </article>
+    {% empty %}
+      <div class="empty">Nothing here yet. Be the first to start a conversation.</div>
+    {% endfor %}
+  </div>
+  {% include "components/pager.html" %}
+</div>
+{% endblock %}

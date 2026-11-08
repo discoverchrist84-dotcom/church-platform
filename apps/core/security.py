@@ -52,6 +52,10 @@ class SecurityHeadersMiddleware:
         response.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(self), usb=()")
         response.setdefault("Cross-Origin-Opener-Policy", "same-origin")
         response.setdefault("X-Content-Type-Options", "nosniff")
+        from .seo import PRIVATE_PREFIXES
+
+        if request.path.startswith(PRIVATE_PREFIXES):  # private pages must never appear in search results
+            response.setdefault("X-Robots-Tag", "noindex, nofollow")
         # Pages with accounts or money on them must never be stored by shared caches.
         if request.user.is_authenticated if hasattr(request, "user") else False:
             response.setdefault("Cache-Control", "private, no-cache")

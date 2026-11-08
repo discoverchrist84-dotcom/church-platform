@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Test payment · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="form-card" style="text-align:center">
+  <p><span class="pill warn">Test mode</span></p>
+  <h1>Simulated payment</h1>
+  <p>This stands in for a real payment page. No money will move.</p>
+  <p><strong>{{ donation.amount }} {{ donation.currency }}</strong> to <strong>{{ donation.fund.name }}</strong></p>
+  <form method="post">{% csrf_token %}
+    <button class="btn block" type="submit">Complete test payment</button>
+  </form>
+  <p style="margin-top:1rem"><a href="{% url 'giving:give' %}">Cancel</a></p>
+</div>
+{% endblock %}

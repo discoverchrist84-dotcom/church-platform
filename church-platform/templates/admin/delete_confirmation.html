@@ -1,0 +1,9 @@
+{% extends "admin/delete_confirmation.html" %}
+{% block content %}
+<div class="helpbox helpbox--danger" role="note">
+  <strong>Please read before you delete</strong>
+  <p>Deleting is <b>permanent</b>: it cannot be undone. The list below shows everything that will be removed along with it.</p>
+  <p>If you only want something <b>off the website for now</b>, press <em>No, take me back</em>, open the item and untick <em>Active</em>, <em>Published</em> or tick <em>Hidden</em> instead. Nothing is lost that way.</p>
+</div>
+{{ block.super }}
+{% endblock %}

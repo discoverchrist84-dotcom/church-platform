@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Thank you · {{ SITE_BRAND }}{% endblock %}
+{% block content %}
+<div class="form-card" style="text-align:center">
+  {% if donation and donation.status == "succeeded" %}
+    <h1>Thank you!</h1>
+    <p>Your gift of <strong>{{ donation.amount }} {{ donation.currency }}</strong> to <strong>{{ donation.fund.name }}</strong> was received.</p>
+    {% if donation.donor_email %}<p class="muted">A receipt is on its way to {{ donation.donor_email }}.</p>{% endif %}
+  {% elif donation and donation.status == "pending" %}
+    <h1>Almost there</h1>
+    <p>Your payment is still being confirmed. Refresh this page in a moment.</p>
+  {% elif donation %}
+    <h1>We couldn't complete that</h1>
+    <p>Your gift wasn't completed and you haven't been charged. You're welcome to try again.</p>
+  {% else %}
+    <h1>Thank you</h1>
+    <p>We couldn't find that gift, but we're grateful for your generosity.</p>
+  {% endif %}
+  <p class="row" style="justify-content:center"><a class="btn" href="{% url 'core:home' %}">Back home</a><a class="btn ghost" href="{% url 'giving:give' %}">Give again</a></p>
+</div>
+{% endblock %}

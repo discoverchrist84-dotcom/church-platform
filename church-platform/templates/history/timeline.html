@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}History · {{ SITE_BRAND }}{% endblock %}
+
+{% block content %}
+<h1>History of the church</h1>
+<form class="search" action="{% url 'history:search' %}" method="get" role="search">
+  <input type="search" name="q" placeholder="Search events, e.g. Nicaea" aria-label="Search history">
+  <button class="btn" type="submit">Search</button>
+</form>
+
+{% for era in eras %}
+  <section id="{{ era.slug }}" class="era">
+    <h2>{{ era.name }} <span class="muted">{{ era.span }}</span></h2>
+    {% if era.summary %}<p>{{ era.summary }}</p>{% endif %}
+    <ol class="timeline">
+      {% for e in era.events.all %}
+        <li>
+          <span class="when">{{ e.when }}</span>
+          <a href="{{ e.get_absolute_url }}"><strong>{{ e.title }}</strong></a>
+          <p>{{ e.summary }}</p>
+        </li>
+      {% empty %}
+        <li class="muted">No published events in this era yet.</li>
+      {% endfor %}
+    </ol>
+  </section>
+{% empty %}
+  <p class="muted">No eras yet. Add some in the admin, or run <code>python manage.py seed_demo</code>.</p>
+{% endfor %}
+
+{% if unassigned %}
+  <section class="era">
+    <h2>Other events</h2>
+    <ol class="timeline">
+      {% for e in unassigned %}
+        <li><span class="when">{{ e.when }}</span>
+          <a href="{{ e.get_absolute_url }}"><strong>{{ e.title }}</strong></a><p>{{ e.summary }}</p></li>
+      {% endfor %}
+    </ol>
+  </section>
+{% endif %}
+{% endblock %}

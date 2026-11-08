@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ member.name }} · {{ council.name }} · {{ SITE_BRAND }}{% endblock %}
+{% block description %}{{ member.bio|truncatechars:160|default:SITE_DESCRIPTION }}{% endblock %}
+{% block content %}
+<p class="crumbs"><a href="{% url 'leadership:list' %}">Leadership</a> › <a href="{{ council.get_absolute_url }}">{{ council.name }}</a></p>
+<article class="profile">
+  <div class="profile__photo">
+    {% if member.photo|file_url %}<img src="{{ member.photo|file_url }}" alt="{{ member.name }}" width="360" height="360">{% else %}<span class="person__initials" aria-hidden="true">{{ member.initials }}</span>{% endif %}
+  </div>
+  <div class="profile__body">
+    <h1 style="margin:0">{{ member.name }}</h1>
+    {% if member.title %}<p class="profile__title">{{ member.title }}</p>{% endif %}
+    <p class="byline">{{ council.name }}{% if member.tenure %} · {{ member.tenure }}{% endif %}{% if not member.is_current %} · <span class="pill">Past office holder</span>{% endif %}</p>
+    {% if member.bio %}{{ member.bio|linebreaks }}{% else %}<p class="muted">Details will be added soon.</p>{% endif %}
+    {% if member.show_contact %}
+      {% if member.email %}<p><a href="mailto:{{ member.email }}">{{ member.email }}</a></p>{% endif %}
+      {% if member.phone %}<p><a href="tel:{{ member.phone }}">{{ member.phone }}</a></p>{% endif %}
+    {% endif %}
+  </div>
+</article>
+{% endblock %}

@@ -6,6 +6,7 @@ DEBUG = False
 # Behind Nginx / a load balancer terminating TLS.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
+SECURE_REDIRECT_EXEMPT = [r"^offline/$"]  # the host's plain-http health check must get 200, not a redirect
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365  # tell browsers to use HTTPS only, for a year

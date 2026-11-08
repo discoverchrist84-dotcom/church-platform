@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }} · {{ SITE_BRAND }}{% endblock %}
+{% block description %}{{ item.excerpt }}{% endblock %}
+{% block content %}
+<p class="crumbs"><a href="{% url 'news:list' %}">News</a> › {{ item.get_scope_display }}</p>
+<article class="reader reader--news">
+  <p><span class="pill{% if item.scope == 'outside' %} gold{% endif %}">{{ item.get_scope_display }}</span> <span class="pill">{{ item.get_topic_display }}</span></p>
+  <h1>{{ item.title }}</h1>
+  <p class="muted">{{ item.published_at|date:"l, j F Y" }}{% if item.author_name %} · {{ item.author_name }}{% endif %}{% if item.branch %} · <a href="{{ item.branch.get_absolute_url }}">{{ item.branch.name }}</a>{% elif item.place %} · {{ item.place }}{% endif %}</p>
+  {% if item.image|file_url %}<img class="news__hero" src="{{ item.image|file_url }}" alt="">{% endif %}
+  {% if item.summary %}<p class="lede">{{ item.summary }}</p>{% endif %}
+  {% for p in paragraphs %}<p>{{ p }}</p>{% endfor %}
+  {% if item.source_name or item.safe_source_url %}
+    <p class="muted">Source: {% if item.safe_source_url %}<a href="{{ item.safe_source_url }}" target="_blank" rel="noopener nofollow">{{ item.source_name|default:"Read the original story" }}</a>{% else %}{{ item.source_name }}{% endif %}</p>
+  {% endif %}
+</article>
+{% if related %}<h2>More news</h2><div class="grid news">{% for n in related %}{% include "news/_card.html" with n=n %}{% endfor %}</div>{% endif %}
+{% endblock %}

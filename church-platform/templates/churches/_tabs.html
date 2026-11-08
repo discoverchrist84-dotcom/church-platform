@@ -1,0 +1,7 @@
+<nav class="tabs structure-tabs" aria-label="Church structure">
+  <a href="{% url 'churches:list' %}"{% if tab == 'overview' %} aria-current="page"{% endif %}>Overview</a>
+  <a href="{% url 'churches:areas' %}"{% if tab == 'areas' %} aria-current="page"{% endif %}>Areas</a>
+  <a href="{% url 'churches:districts' %}"{% if tab == 'districts' %} aria-current="page"{% endif %}>Districts</a>
+  <a href="{% url 'churches:stations' %}"{% if tab == 'stations' %} aria-current="page"{% endif %}>Stations</a>
+  <a href="{% url 'churches:headquarters' %}">National Headquarters</a>
+</nav>
