@@ -903,3 +903,29 @@ th[aria-sort="descending"] .sortmark::after { content: "▼"; opacity: 1; color:
 .dash__icon { font-size: 1.6rem; }
 .dash__tile h3 { margin: 0; }
 .dash__tile p { margin: 0; }
+
+/* ---- Centered layouts ------------------------------------------------------------------
+   Card groups are centred: a row that is not full (3 cards in a 4-card space, a last row of 1 or 2)
+   sits in the middle instead of leaving an empty gap on the right. Cards keep one fixed width. */
+.grid, .people, .features, .dash { display: flex; flex-wrap: wrap; justify-content: center; align-items: stretch; }
+.grid > *, .people > *, .dash > * { flex: 0 1 var(--w, 16rem); min-width: 0; max-width: 100%; }
+.grid { --w: 16rem; }
+.grid.units, .dash { --w: 15rem; }
+.grid.books { --w: 11rem; }
+.grid.news { --w: 17rem; }
+.people { --w: 9.5rem; }
+.people--big, .people--lead { --w: 11rem; }
+.features > * { flex: 0 1 100%; min-width: 0; }
+@media (min-width: 36rem) { .features > * { flex-basis: calc(50% - .5rem); } }
+@media (min-width: 62rem) { .features > * { flex-basis: calc(25% - .75rem); } }
+
+.stats { display: flex; flex-wrap: wrap; justify-content: center; }
+.stats li { flex: 0 0 calc(50% - .375rem); }
+@media (min-width: 40rem) { .stats li { flex: 0 1 11rem; } }
+@media (min-width: 62rem) { .rail { display: flex; flex-wrap: wrap; justify-content: center; } .rail > * { flex: 0 1 calc((100% - 2rem) / 3); } }
+.empty, .section-head { margin-left: auto; margin-right: auto; }
+@media (max-width: 35.99rem) {
+  .grid > *, .dash > * { flex-basis: 100%; }
+  .grid.books > * { flex-basis: calc(50% - .625rem); }
+  .people > * { flex-basis: calc(50% - .75rem); }
+}
