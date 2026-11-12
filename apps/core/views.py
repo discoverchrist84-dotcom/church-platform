@@ -14,7 +14,7 @@ from apps.community.models import Event
 from apps.history.models import Era, HistoricalEvent
 
 
-def _home_stats():
+def _home_stats(show_members=False):
     """Headline numbers for the landing page (cheap grouped counts)."""
     from django.contrib.auth import get_user_model
 
@@ -23,7 +23,8 @@ def _home_stats():
         "areas": levels.get(Branch.Level.AREA, 0),
         "districts": levels.get(Branch.Level.DISTRICT, 0),
         "stations": levels.get(Branch.Level.STATION, 0),
-        "members": get_user_model().objects.filter(is_active=True).count(),
+        # The number of registered members is private: only administrators see it.
+        "members": get_user_model().objects.filter(is_active=True).count() if show_members else None,
     }
 
 
@@ -70,7 +71,7 @@ def home(request):
         "core/home.html",
         {
             "jsonld": church_jsonld(request, site_info()),
-            "stats": _home_stats(),
+            "stats": _home_stats(show_members=request.user.is_staff),
             "spot_council": council,
             "spot_members": council_members,
             "hq": Branch.objects.filter(is_national_headquarters=True, is_active=True).first(),

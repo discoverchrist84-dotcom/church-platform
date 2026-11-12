@@ -122,12 +122,13 @@ SITE_NAME = env(
     "SITE_NAME",
     default="Christ Ascension Church 1984 Foundation Constitution (Lifters Power Assembly)",
 )
+SITE_ACRONYM = env("SITE_ACRONYM", default="CAC84FC")  # what people (and Google) abbreviate the church to
 SITE_BRAND = env("SITE_BRAND", default="Christ Ascension Church")  # header, line 1
 SITE_SUBBRAND = env("SITE_SUBBRAND", default="Lifters Power Assembly")  # header, line 2
 SITE_SHORT_NAME = env("SITE_SHORT_NAME", default="Lifters Power")  # home-screen label
 SITE_LOGO = env("SITE_LOGO", default="img/logo.png")  # path under /static/
 SITE_DESCRIPTION = (
-    "Christ Ascension Church (Lifters Power Assembly): explore the history of the church, "
+    "CAC84FC: Christ Ascension Church 1984 Foundation Constitution (Lifters Power Assembly). Explore the history of the church, "
     "find your branch, hear sermons and stay connected."
 )
 THEME_COLOR = "#0b2a5b"  # navy

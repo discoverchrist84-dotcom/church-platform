@@ -107,26 +107,42 @@ def robots_txt(request):
 
 
 def church_jsonld(request, info):
-    """schema.org markup so search results can show the church's name, logo and contact details."""
+    """schema.org markup: tells search engines the church's full name, that CAC84FC is its short name,
+    its logo and contact details. "<" is escaped so the text can never close the surrounding <script> tag."""
     c = info.get("CONTACT") or {}
-    data = {
-        "@context": "https://schema.org",
+    full = info.get("SITE_NAME") or info.get("SITE_BRAND")
+    acronym = getattr(settings, "SITE_ACRONYM", "")
+    url = request.build_absolute_uri("/")
+    names = [n for n in (acronym, acronym and f"{acronym} Church", info.get("SITE_BRAND"), info.get("SITE_SUBBRAND")) if n and n != full]
+    church = {
         "@type": "Church",
-        "name": info.get("SITE_NAME") or info.get("SITE_BRAND"),
-        "url": request.build_absolute_uri("/"),
+        "@id": url + "#church",
+        "name": full,
+        "legalName": "Christ Ascension Church 1984 Foundation Constitution",
+        "alternateName": names,
+        "url": url,
         "logo": request.build_absolute_uri(info.get("SITE_LOGO_URL", "")),
         "description": info.get("SITE_DESCRIPTION", ""),
     }
+    if acronym:
+        church["disambiguatingDescription"] = f"{acronym} stands for {full.split(' (')[0]}."
     if c.get("email"):
-        data["email"] = c["email"]
+        church["email"] = c["email"]
     if c.get("phone"):
-        data["telephone"] = c["phone"]
+        church["telephone"] = c["phone"]
     if c.get("address"):
-        data["address"] = {"@type": "PostalAddress", "streetAddress": c["address"]}
+        church["address"] = {"@type": "PostalAddress", "streetAddress": c["address"]}
     if c.get("social"):
-        data["sameAs"] = [u for _, u in c["social"]]
-    # "<" is escaped so the text can never close the surrounding <script> tag.
-    return json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")
+        church["sameAs"] = [u for _, u in c["social"]]
+    website = {
+        "@type": "WebSite",
+        "@id": url + "#website",
+        "url": url,
+        "name": acronym or info.get("SITE_BRAND"),  # the short name Google shows in results
+        "alternateName": [n for n in (full, info.get("SITE_BRAND")) if n],
+        "publisher": {"@id": url + "#church"},
+    }
+    return json.dumps({"@context": "https://schema.org", "@graph": [church, website]}, ensure_ascii=False).replace("<", "\\u003c")
 
 
 def seo_context(request, info):

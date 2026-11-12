@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}{{ SITE_ACRONYM }} · {{ SITE_NAME }}{% endblock %}
+{% block og_title %}{{ SITE_ACRONYM }} · {{ SITE_NAME }}{% endblock %}
+{% block description %}{{ SITE_ACRONYM }} stands for Christ Ascension Church 1984 Foundation Constitution (Lifters Power Assembly). {{ SITE_DESCRIPTION }}{% endblock %}
 {% block extra_head %}<script type="application/ld+json">{{ jsonld|safe }}</script>{% endblock %}
 
 {% block fullwidth %}
@@ -37,7 +40,7 @@
       <li class="reveal"><b data-count="{{ stats.areas }}">{{ stats.areas }}</b><span>Areas</span></li>
       <li class="reveal"><b data-count="{{ stats.districts }}">{{ stats.districts }}</b><span>Districts</span></li>
       <li class="reveal"><b data-count="{{ stats.stations }}">{{ stats.stations }}</b><span>Local churches</span></li>
-      <li class="reveal"><b data-count="{{ stats.members }}">{{ stats.members }}</b><span>Members</span></li>
+      {% if user.is_staff and stats.members is not None %}<li class="reveal"><b data-count="{{ stats.members }}">{{ stats.members }}</b><span>Members <small>(admin only)</small></span></li>{% endif %}
     </ul>
   </div>
 </section>

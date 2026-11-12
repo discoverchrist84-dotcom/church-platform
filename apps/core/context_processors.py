@@ -15,6 +15,7 @@ def site(request):
         **(seo_context(request, info) if hasattr(request, "get_host") else {}),  # name, logo, banner, contact: editable in the admin under "Website settings"
         "SITE_LOGO": settings.SITE_LOGO,  # kept for older templates
         "THEME_COLOR": settings.THEME_COLOR,
+        "SITE_ACRONYM": settings.SITE_ACRONYM,
         "DEFAULT_CURRENCY": settings.DEFAULT_CURRENCY,
         "unread_notifications": unread,
         "cart_count": sum((request.session.get("book_cart") or {}).values()) if hasattr(request, "session") else 0,
