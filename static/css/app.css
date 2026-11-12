@@ -919,9 +919,10 @@ th[aria-sort="descending"] .sortmark::after { content: "▼"; opacity: 1; color:
 @media (min-width: 36rem) { .features > * { flex-basis: calc(50% - .5rem); } }
 @media (min-width: 62rem) { .features > * { flex-basis: calc(25% - .75rem); } }
 
-.stats { display: flex; flex-wrap: wrap; justify-content: center; }
-.stats li { flex: 0 0 calc(50% - .375rem); }
-@media (min-width: 40rem) { .stats li { flex: 0 1 11rem; } }
+/* The headline numbers share the full width evenly, whatever their count (4 for visitors, 5 for admins),
+   and wrap neatly on small screens, so nothing is ever left lopsided. */
+.stats { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; }
+.stats li { flex: 1 1 9.5rem; min-width: 0; }
 @media (min-width: 62rem) { .rail { display: flex; flex-wrap: wrap; justify-content: center; } .rail > * { flex: 0 1 calc((100% - 2rem) / 3); } }
 .empty, .section-head { margin-left: auto; margin-right: auto; }
 @media (max-width: 35.99rem) {
