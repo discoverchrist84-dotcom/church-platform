@@ -129,7 +129,7 @@ class HistoricalEvent(TimeStampedModel):
         max_length=80, blank=True, help_text='Optional override, e.g. "c. AD 30–33".'
     )
     summary = models.TextField(help_text="One or two sentences shown in lists.")
-    body = models.TextField(blank=True, help_text="Full article. Plain text; blank line = paragraph.")
+    body = models.TextField(blank=True, help_text="Full article. Use the toolbar for formatting and pictures.")
     hero_image = models.ImageField(upload_to="history/events/", blank=True, validators=[validate_image])
 
     figures = models.ManyToManyField(Figure, blank=True, related_name="events")

@@ -1,0 +1,55 @@
+/* Editor (admin) */
+.rt { border: 1px solid var(--border-color, #c7ccd6); border-radius: 10px; background: #fff; color: #1b2433; max-width: 60rem; overflow: hidden; }
+.rt-bar, .rt-imgbar { display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; padding: .4rem; background: #f1f4fa; border-bottom: 1px solid #d9deea; }
+.rt-imgbar { background: #fff8dc; border-bottom-color: #ecd98a; }
+.rt-btn { min-width: 2rem; height: 2rem; padding: 0 .55rem; border: 1px solid #cdd3e0; border-radius: 6px; background: #fff; color: #1b2433; cursor: pointer; font: 600 .85rem system-ui, sans-serif; }
+.rt-btn:hover { background: #e4ecff; border-color: #1d5fd6; }
+.rt-wide { padding: 0 .75rem; }
+.rt-sep { width: 1px; height: 1.4rem; background: #cdd3e0; margin: 0 .2rem; }
+.rt-select { height: 2rem; border: 1px solid #cdd3e0; border-radius: 6px; background: #fff; color: #1b2433; padding: 0 .4rem; }
+.rt-sw { position: relative; }
+.rt-sw__t { display: inline-grid; place-items: center; min-width: 2rem; height: 2rem; border: 1px solid #cdd3e0; border-radius: 6px; background: #fff; cursor: pointer; font-weight: 800; }
+.rt-sw__menu { display: none; position: absolute; top: 2.3rem; left: 0; z-index: 20; gap: .3rem; padding: .4rem; background: #fff; border: 1px solid #cdd3e0; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); width: 9.5rem; flex-wrap: wrap; }
+.rt-sw.open .rt-sw__menu { display: flex; }
+.rt-dot { width: 1.5rem; height: 1.5rem; border-radius: 50%; border: 1px solid #99a; cursor: pointer; padding: 0; line-height: 1; }
+.rt-page { min-height: 16rem; max-height: 34rem; overflow: auto; padding: 1rem 1.25rem; outline: none; line-height: 1.65; font-size: 1rem; }
+.rt-page:focus { box-shadow: inset 0 0 0 2px #1d5fd633; }
+.rt-source { width: 100%; min-height: 16rem; border: 0; padding: 1rem; font: .85rem/1.5 ui-monospace, monospace; box-sizing: border-box; }
+.rt-status { padding: .3rem .75rem; font-size: .8rem; color: #536; min-height: 1.1rem; }
+.rt-page img.rt-selected { outline: 3px solid #1d5fd6; outline-offset: 2px; }
+
+/* Formatted text (public pages and the editor share these rules, so what you write is what visitors see) */
+.rich { line-height: 1.75; overflow-wrap: anywhere; }
+.rich::after { content: ""; display: block; clear: both; }
+.rich > :first-child { margin-top: 0; }
+.rich p { margin: 0 0 1em; }
+.rich h2, .rich h3, .rich h4 { line-height: 1.25; margin: 1.4em 0 .5em; clear: none; }
+.rich ul, .rich ol { padding-left: 1.4em; margin: 0 0 1em; }
+.rich blockquote { margin: 1.2em 0; padding: .6em 1.1em; border-left: 4px solid var(--gold, #f2b705); background: rgba(29, 95, 214, .06); border-radius: 0 10px 10px 0; font-style: italic; }
+.rich hr { border: 0; border-top: 2px solid rgba(128, 128, 128, .3); margin: 1.6em 0; }
+.rich a { text-decoration: underline; }
+.rich img { max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 18px rgba(11, 42, 91, .18); cursor: zoom-in; }
+/* Pictures: centred on their own line, or floated so the text wraps neatly beside them */
+.rich img, .rich img.img-center { display: block; margin: 1.2em auto; }
+.rich img.img-full { display: block; width: 100%; margin: 1.2em 0; }
+.rich img.img-left { float: left; margin: .3em 1.4em .8em 0; width: 40%; }
+.rich img.img-right { float: right; margin: .3em 0 .8em 1.4em; width: 40%; }
+.rich h2, .rich h3 { overflow: hidden; } /* headings never squeeze beside a floated picture */
+@media (max-width: 40rem) { /* on phones the picture takes the full width and the text goes below it */
+  .rich img.img-left, .rich img.img-right { float: none; display: block; width: 100% !important; margin: 1em 0; }
+  .rich img[style] { max-width: 100%; }
+}
+
+/* Click-to-enlarge */
+.zoomable { cursor: zoom-in; }
+.lightbox { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 1rem; background: rgba(5, 12, 28, .92); animation: lbfade .18s ease; }
+.lightbox[hidden] { display: none; }
+.lightbox__img { max-width: min(96vw, 1400px); max-height: 82vh; object-fit: contain; border-radius: 10px; box-shadow: 0 20px 60px rgba(0, 0, 0, .6); background: #111; }
+.lightbox__cap { color: #e8efff; text-align: center; margin: .75rem 0 0; max-width: 60rem; }
+.lightbox__close, .lightbox__nav { position: absolute; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .16); color: #fff; cursor: pointer; font-size: 1.6rem; line-height: 1; width: 2.75rem; height: 2.75rem; }
+.lightbox__close:hover, .lightbox__nav:hover { background: rgba(255, 255, 255, .3); }
+.lightbox__close { top: 1rem; right: 1rem; }
+.lightbox__nav--prev { left: 1rem; top: 50%; } .lightbox__nav--next { right: 1rem; top: 50%; }
+.lightbox__box { display: grid; justify-items: center; }
+@keyframes lbfade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .lightbox { animation: none; } }

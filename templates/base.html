@@ -36,6 +36,7 @@
     })();
   </script>
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'css/richtext.css' %}">
   {% block extra_head %}{% endblock %}
 </head>
 <body{% if user.is_authenticated %} data-auth="1"{% endif %}>
@@ -172,6 +173,7 @@
   <div class="toasts" id="toasts" aria-live="polite"></div>
 
   <script src="{% static 'js/app.js' %}" defer></script>
+  <script src="{% static 'js/lightbox.js' %}" defer></script>
   {% if user.is_authenticated %}<script src="{% static 'js/notifications.js' %}" defer></script>{% endif %}
   {% block extra_js %}{% endblock %}
 </body>

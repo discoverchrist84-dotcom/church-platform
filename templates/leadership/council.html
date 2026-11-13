@@ -7,7 +7,7 @@
   <h1>{{ council.name }}</h1>
   {% if council.description %}<p class="lede">{{ council.description }}</p>{% endif %}
 </div>
-{% if council.cover|file_url %}<img class="council__cover" src="{{ council.cover|file_url }}" alt="" loading="lazy">{% endif %}
+{% if council.cover|file_url %}<img class="council__cover zoomable" data-zoom src="{{ council.cover|file_url }}" alt="" loading="lazy">{% endif %}
 <div class="people people--big stagger">
   {% for m in current %}{% include "leadership/_person.html" with m=m %}{% empty %}<div class="empty">No members listed yet.</div>{% endfor %}
 </div>

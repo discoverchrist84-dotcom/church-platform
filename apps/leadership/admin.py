@@ -78,6 +78,7 @@ class CouncilAdmin(FriendlyAdmin):
 
 @admin.register(CouncilMember)
 class CouncilMemberAdmin(FriendlyAdmin):
+    rich_fields = ("bio",)
     help_list = "Everyone who serves on a council. Tip: it is quicker to edit members from inside their council."
     help_form = "Only administrators edit this. Set the date the person took office; the site shows when the 4-year term ends and flags it on the dashboard for an election. Choose the council, then enter the name, office and a photo. Contact details stay private unless 'show contact' is ticked."
     list_display = ("thumb", "name", "title", "council", "term", "election_status", "is_current", "order")

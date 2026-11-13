@@ -7,7 +7,7 @@
   <p class="kicker">{{ entry.date|date:"l, j F Y" }}</p>
   <h2 style="margin-top:0">{{ entry.title }}</h2>
   {% if entry.scripture %}<p class="scripture">{{ entry.scripture }}</p>{% endif %}
-  {% for p in paragraphs %}<p>{{ p }}</p>{% endfor %}
+  {{ entry.body|rich }}
   {% if entry.prayer %}<div class="prayer"><strong>Prayer</strong><p>{{ entry.prayer }}</p></div>{% endif %}
 </article>
 <nav class="reader__nav">

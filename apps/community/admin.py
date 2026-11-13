@@ -10,6 +10,7 @@ unhide = lambda label: flag_action("is_hidden", False, f"Show selected {label} a
 
 @admin.register(Announcement)
 class AnnouncementAdmin(FriendlyAdmin):
+    rich_fields = ("body",)
     help_list = "News shown on a unit's page. Pinned announcements stay at the top."
     help_form = "Write the headline and message, choose the unit it is for, and tick 'published' when it should appear."
     list_display = ("title", "branch", "is_pinned", "is_published", "created_at")

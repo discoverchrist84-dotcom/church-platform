@@ -53,6 +53,7 @@ class PlaceAdmin(FriendlyAdmin):
 
 @admin.register(Figure)
 class FigureAdmin(FriendlyAdmin):
+    rich_fields = ("bio",)
     help_list = "People who shaped the church. Only published entries show on the website."
     help_form = "Fill in the biography, attach sources, and set the status to Published when it is ready."
     list_display = ("name", "title", "born_year", "died_year", "status")
@@ -65,6 +66,7 @@ class FigureAdmin(FriendlyAdmin):
 
 @admin.register(HistoricalEvent)
 class HistoricalEventAdmin(FriendlyAdmin):
+    rich_fields = ("body",)
     help_list = "The church timeline. New events start as Draft and only appear once Published."
     help_form = "Write a short summary and the full article, link people, places and sources, and set the status to Published when ready."
     list_display = ("title", "era", "year_start", "status", "published_at")

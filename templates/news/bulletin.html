@@ -6,6 +6,6 @@
   {% if b.is_urgent %}<span class="pill gold">URGENT</span>{% endif %}
   <h1>{{ b.title }}</h1>
   <p class="muted">From the National Headquarters · {{ b.published_at|date:"j F Y" }}</p>
-  {{ b.body|linebreaks }}
+  {{ b.body|rich }}
 </article>
 {% endblock %}

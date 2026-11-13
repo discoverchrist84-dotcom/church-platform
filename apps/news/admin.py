@@ -8,6 +8,7 @@ from .models import Bulletin, NewsArticle
 
 @admin.register(NewsArticle)
 class NewsArticleAdmin(FriendlyAdmin):
+    rich_fields = ("body",)
     help_list = ("News shown on the News page and the home page. Use the filters to see church news or outside news. "
                  "Untick 'published' to keep a story as a draft.")
     help_form = ("Write the headline, a short summary and the story. Choose 'In our church' for our own news, or 'Outside the church' "
@@ -46,6 +47,7 @@ class NewsArticleAdmin(FriendlyAdmin):
 
 @admin.register(Bulletin)
 class BulletinAdmin(FriendlyAdmin):
+    rich_fields = ("body",)
     help_list = ("Official notices from the National Headquarters. Send one to the whole church, or only to chosen areas, districts or stations. "
                  "Members get a notification when it is published.")
     help_form = ("Write the notice and choose who receives it. For 'Chosen', pick the areas, districts or stations: everything beneath them "

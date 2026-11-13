@@ -9,6 +9,7 @@ app_name = "core"
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("editor/upload/", views.editor_upload, name="editor_upload"),
     path("robots.txt", robots_txt, name="robots"),
     path("sitemap.xml", sitemap, {"sitemaps": SITEMAPS}, name="sitemap"),
     path("offline/", views.offline, name="offline"),

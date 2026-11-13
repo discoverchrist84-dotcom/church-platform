@@ -141,3 +141,44 @@ def media_from_database(request, path):
     resp["Cache-Control"] = "public, max-age=86400"
     resp["X-Content-Type-Options"] = "nosniff"
     return resp
+
+
+def editor_upload(request):
+    """Pictures added from inside the formatting editor (staff only). Returns {"url": ...}."""
+    import io
+    import os
+    import uuid
+
+    from django.core.files.base import ContentFile
+    from django.core.files.storage import default_storage
+    from django.http import JsonResponse
+    from django.views.decorators.http import require_POST
+
+    from .images import shrink
+
+    @require_POST
+    def inner(request):
+        if not (request.user.is_authenticated and request.user.is_staff):
+            return JsonResponse({"error": "Please sign in to the admin first."}, status=403)
+        f = request.FILES.get("image")
+        if not f:
+            return JsonResponse({"error": "No picture received."}, status=400)
+        if f.size > settings.MAX_IMAGE_MB * 1024 * 1024:
+            return JsonResponse({"error": f"That picture is bigger than {settings.MAX_IMAGE_MB} MB."}, status=400)
+        try:
+            from PIL import Image
+
+            Image.open(f).verify()
+            f.seek(0)
+            if (Image.open(f).format or "").upper() not in ("JPEG", "PNG", "GIF", "WEBP"):
+                raise ValueError("format")
+            result = shrink(f)
+            if not result:
+                raise ValueError("shrink")
+            content, name = result
+        except Exception:
+            return JsonResponse({"error": "That file is not a picture we can use. Try a JPG or PNG."}, status=400)
+        saved = default_storage.save(f"uploads/rich/{timezone.now():%Y/%m}/{uuid.uuid4().hex[:12]}{os.path.splitext(name)[1]}", content)
+        return JsonResponse({"url": default_storage.url(saved)})
+
+    return inner(request)

@@ -52,6 +52,18 @@ class ExportCsvMixin:
 
 
 class FriendlyAdmin(ExportCsvMixin, admin.ModelAdmin):
+    rich_fields = ()  # names of long-text fields that get the formatting editor, e.g. ("body",)
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name in self.rich_fields:
+            from .widgets import RichTextFormField
+
+            return RichTextFormField(
+                label=db_field.verbose_name.capitalize(), required=not db_field.blank,
+                help_text=kwargs.get("help_text") or db_field.help_text,
+            )
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
+
     """Adds a plain-English help box above the list and the form, and sensible defaults.
 
     Set ``help_list`` / ``help_form`` (short sentences) on each admin class.

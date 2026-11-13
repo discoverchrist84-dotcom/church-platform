@@ -8,9 +8,9 @@
   <h1>{{ event.title }}</h1>
   <p class="lede"><span class="when">{{ event.when }}</span> — {{ event.summary }}</p>
 
-  {% if event.hero_image|file_url %}<img class="hero-img" src="{{ event.hero_image|file_url }}" alt="{{ event.title }}">{% endif %}
+  {% if event.hero_image|file_url %}<img class="hero-img zoomable" data-zoom src="{{ event.hero_image|file_url }}" alt="{{ event.title }}">{% endif %}
 
-  {% for p in paragraphs %}<p>{{ p }}</p>{% endfor %}
+  {{ event.body|rich }}
 
   {% if figures %}
     <h2>People</h2>

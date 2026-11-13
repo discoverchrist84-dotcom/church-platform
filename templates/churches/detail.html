@@ -67,7 +67,7 @@
             <article class="announce">
               <h3>{% if a.is_pinned %}<span class="pill gold">Pinned</span> {% endif %}{{ a.title }}</h3>
               <p class="byline">{{ a.created_at|date:"M j, Y" }}</p>
-              {{ a.body|linebreaks }}
+              {{ a.body|rich }}
             </article>
           {% empty %}<div class="empty">No announcements yet.</div>{% endfor %}
         </div>

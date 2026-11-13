@@ -76,6 +76,7 @@ class CategoryAdmin(FriendlyAdmin):
 
 @admin.register(DevotionalEntry)
 class DevotionalEntryAdmin(FriendlyAdmin):
+    rich_fields = ("body",)
     help_list = "One reading per day for a daily devotional such as 'Life for You'. Readings show on their date and stay in the archive."
     help_form = "Pick the date, write the title, scripture, reading and an optional prayer. Leave a blank line between paragraphs."
     list_display = ("date", "title", "scripture", "book", "is_published")

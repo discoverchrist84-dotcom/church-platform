@@ -17,3 +17,19 @@ def file_url(field):
         return field.url
     except Exception:  # remote storage hiccup etc.: fall back to the placeholder, never break the page
         return ""
+
+
+@register.filter
+def rich(value):
+    """Formatted text (bold, lists, pictures...) cleaned and ready to show. Old plain text works too."""
+    from apps.core.richtext import render_rich
+
+    return render_rich(value)
+
+
+@register.filter
+def plain(value, limit=0):
+    """The words only, without formatting, optionally cut to `limit` characters (for descriptions)."""
+    from apps.core.richtext import plain_text
+
+    return plain_text(value, int(limit) or None)

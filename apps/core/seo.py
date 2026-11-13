@@ -9,7 +9,7 @@ from django.utils import timezone
 
 # Pages that belong to one person or to the admin: kept out of search results.
 PRIVATE_PREFIXES = (
-    "/admin/", "/accounts/", "/api/", "/notifications/", "/media/private",
+    "/admin/", "/editor/", "/accounts/", "/api/", "/notifications/", "/media/private",
     "/books/cart", "/books/checkout", "/books/orders", "/books/library", "/books/download", "/give/thanks",
 )
 

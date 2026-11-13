@@ -31,7 +31,7 @@ class NewsArticle(TimeStampedModel):
     title = models.CharField(max_length=220)
     slug = models.SlugField(max_length=240, unique=True, blank=True)
     summary = models.CharField(max_length=300, blank=True, help_text="One or two sentences shown in the news list.")
-    body = models.TextField(help_text="The full story. Leave a blank line between paragraphs.")
+    body = models.TextField(help_text="The full story. Use the toolbar for bold, italics, headings, lists, links and pictures.")
     image = models.ImageField(upload_to="news/", blank=True, validators=[validate_image], help_text="Optional picture for the story. Large photos are resized automatically.")
     scope = models.CharField(
         max_length=8, choices=Scope.choices, default=Scope.INSIDE,
@@ -81,8 +81,9 @@ class NewsArticle(TimeStampedModel):
     def excerpt(self):
         if self.summary:
             return self.summary
-        text = " ".join(self.body.split())
-        return text[:200] + ("…" if len(text) > 200 else "")
+        from apps.core.richtext import plain_text
+
+        return plain_text(self.body, 200)
 
     @property
     def safe_source_url(self):
@@ -98,7 +99,7 @@ class Bulletin(TimeStampedModel):
         CHOSEN = "chosen", "Chosen areas, districts or stations"
 
     title = models.CharField(max_length=220)
-    body = models.TextField(help_text="The notice. Leave a blank line between paragraphs.")
+    body = models.TextField(help_text="The notice. Use the toolbar for bold, italics, lists, links and pictures.")
     audience = models.CharField(max_length=6, choices=Audience.choices, default=Audience.ALL)
     units = models.ManyToManyField(
         "churches.Branch", blank=True, related_name="bulletins",
@@ -127,8 +128,9 @@ class Bulletin(TimeStampedModel):
 
     @property
     def excerpt(self):
-        text = " ".join(self.body.split())
-        return text[:220] + ("…" if len(text) > 220 else "")
+        from apps.core.richtext import plain_text
+
+        return plain_text(self.body, 220)
 
     @classmethod
     def visible_to(cls, user):
